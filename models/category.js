@@ -3,7 +3,11 @@ const mongoose = require('mongoose')
 const categorySchema = new mongoose.Schema({
   title: String,
   content: String,
-  albums: [String]
+  albums: [String],
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
 })
 
 categorySchema.set('toJSON', {
