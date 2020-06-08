@@ -1,0 +1,7 @@
+post http://localhost:3001/api/categories
+Content-Type: application/json
+
+{
+    "title": "Category 2",
+    "content": "Täällä uutta requestistä."
+}
