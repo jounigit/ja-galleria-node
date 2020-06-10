@@ -1,15 +1,9 @@
 const categoriesRouter = require('express').Router()
-const jwt = require('jsonwebtoken')
 const User = require('../models/user')
 const Category = require('../models/category')
+const jwtAuth = require('express-jwt')
 
-const getTokenFrom = request => {
-  const authorization = request.get('authorization')
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    return authorization.substring(7)
-  }
-  return null
-}
+const protectedurl = jwtAuth({ secret: process.env.SECRET })
 
 //******************* Get all ***********************************/
 categoriesRouter.get('/', async (request, response) => {
@@ -19,42 +13,28 @@ categoriesRouter.get('/', async (request, response) => {
 })
 
 //******************* Create new ***********************************/
-categoriesRouter.post('/', async (request, response) => {
+categoriesRouter.post('/', protectedurl, async (request, response) => {
   const body = request.body
-  const token = getTokenFrom(request)
+  const userID = request.user.id
 
-  try {
-    const decodedToken = jwt.verify(token, process.env.SECRET)
+  const user = await User.findById(userID)
 
-    if (!token || !decodedToken.id) {
-      return response.status(401).json({ error: 'token missing or invalid' })
-    }
+  const category = new Category({
+    title: body.title,
+    content: body.content,
+    user: user._id
+  })
 
-    if (body.title === undefined && body.content === undefined) {
-      return response.status(400).json({ error: 'title and content missing' })
-    }
+  const savedCategory = await category.save()
+  user.categories = user.categories.concat(savedCategory._id)
+  await user.save()
 
-    const user = await User.findById(decodedToken.id)
+  const newSavedCategory = await Category
+    .findById(savedCategory._id)
+    .populate('user', { username: 1, email: 1 })
 
-    const category = new Category({
-      title: body.title,
-      content: body.content,
-      user: user._id
-    })
+  return response.json(newSavedCategory.toJSON())
 
-    const savedCategory = await category.save()
-    user.categories = user.categories.concat(savedCategory._id)
-    await user.save()
-
-    const newSavedCategory = await Category
-      .findById(savedCategory._id)
-      .populate('user', { username: 1, email: 1 })
-
-    return response.json(newSavedCategory.toJSON())
-  } catch (exception) {
-    console.log(exception)
-    response.status(500).json({ error: 'something went wrong...' })
-  }
 })
 
 //******************* Get one ***********************************/
@@ -68,48 +48,20 @@ categoriesRouter.get('/:id', async (request, response) => {
 })
 
 //******************* Update one ***********************************/
-categoriesRouter.put('/:id', async (request, response) => {
+categoriesRouter.put('/:id', protectedurl, async (request, response) => {
   const body = request.body
-  const token = getTokenFrom(request)
 
-  if (!token) {
-    return response.status(401).json({ error: 'token missing' })
+  const category = {
+    title: body.title,
+    content: body.content
   }
 
-  const decodedToken = jwt.verify(token, process.env.SECRET)
-
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: 'token invalid' })
-  }
-
-  if (body.title === undefined && body.content === undefined) {
-    return response.status(400).json({ error: 'title and content missing' })
-  }
-
-  try {
-    // const user = await User.findById(decodedToken.id)
-
-    const category = {
-      title: body.title,
-      content: body.content
-    }
-
-    const updatedCategory = await Category
-      .findByIdAndUpdate(request.params.id, category)
-
-    if (updatedCategory) {
-      return response.json(updatedCategory.toJSON())
-    } else {
-      response.status(404).end()
-    }
-  } catch (exception) {
-    console.log(exception)
-    response.status(400).send({ error: 'malformatted id' })
-  }
+  const updatedCategory = await Category.findByIdAndUpdate(request.params.id, category)
+  return response.json(updatedCategory.toJSON())
 })
 
 //******************* Delete one ***********************************/
-categoriesRouter.delete('/:id', async (request, response) => {
+categoriesRouter.delete('/:id', protectedurl, async (request, response) => {
   await Category.findByIdAndRemove(request.params.id)
   response.status(204).end()
 })

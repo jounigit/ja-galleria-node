@@ -1,7 +1,10 @@
 const mongoose = require('mongoose')
 
 const categorySchema = new mongoose.Schema({
-  title: String,
+  title: {
+    type: String,
+    required: true
+  },
   content: String,
   albums: [String],
   user: {
