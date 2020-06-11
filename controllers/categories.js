@@ -3,7 +3,7 @@ const User = require('../models/user')
 const Category = require('../models/category')
 const jwtAuth = require('express-jwt')
 
-const protectedurl = jwtAuth({ secret: process.env.SECRET })
+const routeAuth = jwtAuth({ secret: process.env.SECRET })
 
 //******************* Get all ***********************************/
 categoriesRouter.get('/', async (request, response) => {
@@ -13,15 +13,15 @@ categoriesRouter.get('/', async (request, response) => {
 })
 
 //******************* Create new ***********************************/
-categoriesRouter.post('/', protectedurl, async (request, response) => {
-  const body = request.body
+categoriesRouter.post('/', routeAuth, async (request, response) => {
+  const { title, content } = request.body
   const userID = request.user.id
 
   const user = await User.findById(userID)
 
   const category = new Category({
-    title: body.title,
-    content: body.content,
+    title,
+    content,
     user: user._id
   })
 
@@ -48,20 +48,21 @@ categoriesRouter.get('/:id', async (request, response) => {
 })
 
 //******************* Update one ***********************************/
-categoriesRouter.put('/:id', protectedurl, async (request, response) => {
-  const body = request.body
+categoriesRouter.put('/:id', routeAuth, async (request, response) => {
+  const { title, content } = request.body
 
   const category = {
-    title: body.title,
-    content: body.content
+    title,
+    content
   }
 
-  const updatedCategory = await Category.findByIdAndUpdate(request.params.id, category)
+  await Category.findByIdAndUpdate(request.params.id, category)
+  const updatedCategory = await Category.findById(request.params.id)
   return response.json(updatedCategory.toJSON())
 })
 
 //******************* Delete one ***********************************/
-categoriesRouter.delete('/:id', protectedurl, async (request, response) => {
+categoriesRouter.delete('/:id', routeAuth, async (request, response) => {
   await Category.findByIdAndRemove(request.params.id)
   response.status(204).end()
 })
