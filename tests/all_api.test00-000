@@ -1,0 +1,81 @@
+/* eslint-disable no-undef */
+const supertest = require('supertest')
+const mongoose = require('mongoose')
+const helper = require('./test_helper')
+const app = require('../app')
+const api = supertest(app)
+
+const Album = require('../models/album')
+const Category = require('../models/category')
+
+//********** ******************************************/
+beforeAll(async () => {
+  helper.clearAndInitAllTables()
+})
+
+afterAll( async () => {
+  await mongoose.connection.close()
+})
+//********** album succeeds ********************************/
+describe('with initial albums', () => {
+
+  test('succeeds return albums as json', async () => {
+    const albums = await helper.albumsInDb()
+
+    console.log('ALBUMS: ', albums)
+
+    await api
+      .get('/api/albums')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  })
+
+  test('all albums are returned', async () => {
+    const response = await api.get('/api/albums')
+
+    expect(response.body.length).toBe(helper.initialAlbums.length)
+  })
+})
+
+//****************** succeeds ************************************/
+// get all
+describe('with initial categories', () => {
+
+  test('succeeds return categories as json', async () => {
+    await api
+      .get('/api/categories')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  })
+
+  test('all categories are returned', async () => {
+    const response = await api.get('/api/categories')
+
+    expect(response.body.length).toBe(helper.initialCategories.length)
+  })
+
+  // get one
+  test('succeeds view a specific category', async () => {
+    const categoriesAtStart = await helper.categoriesInDb()
+
+    const categoryToSee = categoriesAtStart[0]
+
+    const result = await api
+      .get(`/api/categories/${categoryToSee.id}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body).toEqual(categoryToSee)
+  })
+
+  // slug
+  test('should make unique slugs', async () => {
+    await Category.insertMany(helper.initialCategories)
+
+    const response = await api.get('/api/categories')
+    const initLength = helper.initialCategories.length
+
+    expect(response.body.length).toBe(initLength * 2)
+  })
+
+})

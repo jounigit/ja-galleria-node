@@ -1,8 +1,9 @@
 const mongoose = require('mongoose')
 const slug = require('mongoose-slug-updater')
 const beautifyUnique = require('mongoose-beautiful-unique-validation')
+// mongoose.plugin(slug)
 
-const categorySchema = new mongoose.Schema({
+const albumSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
@@ -15,19 +16,17 @@ const categorySchema = new mongoose.Schema({
     unique: true
   },
   content: String,
-  albums: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Album'
-    }
-  ],
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
+  },
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category'
   }
 })
 
-categorySchema.set('toJSON', {
+albumSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
@@ -35,8 +34,8 @@ categorySchema.set('toJSON', {
   }
 })
 
-// categorySchema.set('autoIndex', false)
-categorySchema.plugin(beautifyUnique)
-categorySchema.plugin(slug)
+// albumSchema.set('autoIndex', false)
+albumSchema.plugin(beautifyUnique)
+albumSchema.plugin(slug)
 
-module.exports = mongoose.model('Category', categorySchema)
+module.exports = mongoose.model('Album', albumSchema)

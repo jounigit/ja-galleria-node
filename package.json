@@ -21,6 +21,8 @@
     "express-jwt": "^5.3.3",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.18",
+    "mongoose-beautiful-unique-validation": "^7.1.1",
+    "mongoose-slug-updater": "^3.2.3",
     "mongoose-unique-validator": "^2.0.3"
   },
   "devDependencies": {

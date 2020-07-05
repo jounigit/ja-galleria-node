@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
-const uniqueValidator = require('mongoose-unique-validator')
+const beautifyUnique = require('mongoose-beautiful-unique-validation')
+// const uniqueValidator = require('mongoose-unique-validator')
 
 const userSchema = mongoose.Schema({
   username: {
@@ -17,6 +18,12 @@ const userSchema = mongoose.Schema({
       ref: 'Category'
     }
   ],
+  albums: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Album'
+    }
+  ],
 })
 
 userSchema.set('toJSON', {
@@ -28,7 +35,7 @@ userSchema.set('toJSON', {
   }
 })
 
-userSchema.plugin(uniqueValidator)
+userSchema.plugin(beautifyUnique)
 
 const User = mongoose.model('User', userSchema)
 
