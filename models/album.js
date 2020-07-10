@@ -23,7 +23,13 @@ const albumSchema = new mongoose.Schema({
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category'
-  }
+  },
+  pictures: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Picture'
+    }
+  ],
 })
 
 albumSchema.set('toJSON', {

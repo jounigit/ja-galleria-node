@@ -6,6 +6,7 @@ const mongoose = require('mongoose')
 const Category = require('../models/category')
 const Album = require('../models/album')
 const User = require('../models/user')
+const Picture = require('../models/picture')
 
 //********** constants *******************************/
 const initialCategories = [
@@ -34,11 +35,24 @@ const initialAlbums = [
   },
 ]
 
+const initialPictures = [
+  {
+    title: 'Picture 1',
+  },
+  {
+    title: 'Picture 2'
+  },
+  {
+    title: 'Picture 3'
+  },
+]
+
 //********** delete all records *******************************/
 const clearAllTables = async () => {
   await Album.deleteMany({})
   await Category.deleteMany({})
   await User.deleteMany({})
+  await Picture.deleteMany({})
 }
 
 const removeAllCollections = async () => {
@@ -117,6 +131,7 @@ const nonExistingId = async (collection) => {
 module.exports = {
   initialCategories,
   initialAlbums,
+  initialPictures,
   nonExistingId,
   addTestUser,
   getToken,

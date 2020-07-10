@@ -3,7 +3,7 @@
 const mongoose = require('mongoose')
 mongoose.set('useCreateIndex', true)
 mongoose.promise = global.Promise
-const helper = require('./test_helper')
+// const helper = require('./test_helper')
 
 async function removeAllCollections () {
   const collections = Object.keys(mongoose.connection.collections)

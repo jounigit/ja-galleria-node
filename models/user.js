@@ -24,6 +24,12 @@ const userSchema = mongoose.Schema({
       ref: 'Album'
     }
   ],
+  pictures: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Picture'
+    }
+  ],
 })
 
 userSchema.set('toJSON', {

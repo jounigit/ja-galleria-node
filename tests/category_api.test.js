@@ -9,13 +9,6 @@ setupDB()
 
 const Category = require('../models/category')
 
-// beforeAll( async () => {
-//   helper.clearAllTables()
-// })
-
-// afterAll( async () => {
-//   await mongoose.connection.close()
-// })
 beforeEach( async () => {
   await Category.insertMany(helper.initialCategories)
 })
