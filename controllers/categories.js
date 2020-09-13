@@ -17,7 +17,9 @@ categoriesRouter.post('/', routeAuth, async (request, response) => {
   const { title, content } = request.body
   const userID = request.user.id
 
-  const user = await User.findById(userID)
+  const user = await User
+    .findById(userID)
+    .populate('album', { title: 1 })
 
   const category = new Category({
     title,

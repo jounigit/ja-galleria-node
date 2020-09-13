@@ -1,5 +1,6 @@
 const albumsRouter = require('express').Router()
 const User = require('../models/user')
+// const Category = require('../models/category')
 const Album = require('../models/album')
 const jwtAuth = require('express-jwt')
 
@@ -7,7 +8,10 @@ const routeAuth = jwtAuth({ secret: process.env.SECRET })
 
 //******************* Get all ***********************************/
 albumsRouter.get('/', async (request, response) => {
-  const albums = await Album.find({})
+  const albums = await Album
+    .find({})
+    .populate( 'user', { username: 1, email: 1 } )
+    .populate('category', { title: 1 })
 
   response.json(albums.map(album => album.toJSON()))
 })
@@ -39,7 +43,9 @@ albumsRouter.post('/', routeAuth, async (request, response) => {
 
 //******************* Get one ***********************************/
 albumsRouter.get('/:id', async (request, response) => {
-  const album = await Album.findById(request.params.id)
+  const album = await Album
+    .findById(request.params.id)
+    .populate('category', { title: 1 })
   if (album) {
     response.json(album.toJSON())
   } else {
@@ -49,11 +55,12 @@ albumsRouter.get('/:id', async (request, response) => {
 
 //******************* Update one ***********************************/
 albumsRouter.put('/:id', routeAuth, async (request, response) => {
-  const { title, content } = request.body
+  const { title, content, category } = request.body
 
   const album = {
     title,
-    content
+    content,
+    category
   }
 
   await Album.findByIdAndUpdate(request.params.id, album)
