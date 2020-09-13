@@ -1,7 +1,7 @@
 {
   "name": "jagalleria-backend",
   "version": "1.0.0",
-  "description": "backend for jagalleria",
+  "description": "nodebackend for jagalleria",
   "repository": "git@github.com:jounigit/ja-galleria-node.git",
   "main": "index.js",
   "scripts": {
