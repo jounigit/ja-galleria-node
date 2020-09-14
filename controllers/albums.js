@@ -10,8 +10,8 @@ const routeAuth = jwtAuth({ secret: process.env.SECRET })
 albumsRouter.get('/', async (request, response) => {
   const albums = await Album
     .find({})
-    .populate( 'user', { username: 1, email: 1 } )
-    .populate('category', { title: 1 })
+    // .populate( 'user', { username: 1, email: 1 } )
+    // .populate('category', { title: 1 })
 
   response.json(albums.map(album => album.toJSON()))
 })
