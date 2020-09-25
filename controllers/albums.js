@@ -45,7 +45,7 @@ albumsRouter.post('/', routeAuth, async (request, response) => {
 albumsRouter.get('/:id', async (request, response) => {
   const album = await Album
     .findById(request.params.id)
-    .populate('category', { title: 1 })
+    // .populate('category', { title: 1 })
   if (album) {
     response.json(album.toJSON())
   } else {
