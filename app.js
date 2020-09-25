@@ -2,6 +2,10 @@ const config = require('./utils/config')
 const express = require('express')
 require('express-async-errors')
 const app = express()
+const fileupload = require('express-fileupload')
+app.use(fileupload({
+  useTempFiles: true
+}))
 const cors = require('cors')
 const categoriesRouter = require('./controllers/categories')
 const albumsRouter = require('./controllers/albums')

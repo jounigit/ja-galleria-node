@@ -2,8 +2,83 @@ const picturesRouter = require('express').Router()
 const User = require('../models/user')
 const Picture = require('../models/picture')
 const jwtAuth = require('express-jwt')
+const cloudinary = require('cloudinary').v2
+const { promisify } = require('util')
+const sizeOf = promisify(require('image-size'))
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+})
+
+const uploadOptions = (width = '', height = '') => {
+  return {
+    public_id: Date.now(),
+    width,
+    height,
+    crop: 'scale'
+  }
+}
 
 const routeAuth = jwtAuth({ secret: process.env.SECRET })
+
+//******************* Upload helpers ***********************************/
+
+const getOrientation = async (file) => {
+  try {
+    const dimensions = await sizeOf(file)
+    console.log('Dims: ', dimensions)
+    return dimensions.width < dimensions.height ? 'isPortrait' : 'isLandscape'
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+const setOptions =  (width, height, orientation) => {
+  // const orientation = await getOrientation(file)
+  const ops = orientation === 'isLandscape' ?
+    uploadOptions(width, '') :
+    uploadOptions('', height)
+  return ops
+}
+
+//******************* Upload picture ***********************************/
+picturesRouter.post('/upload', routeAuth, async (request, response) => {
+  const file = request.files.image
+  console.log('Original: ', file)
+  const userID = request.user.id
+  const width = 1600
+  const height = 1200
+
+  const user = await User.findById(userID)
+  const orientation = await getOrientation(file.tempFilePath)
+
+  const options = orientation && await setOptions(width, height, orientation)
+
+  const uploaded = await cloudinary.uploader.upload(file.tempFilePath, options, (error, result) => {
+    if (error) response.send({ error })
+    return ({ result })
+  })
+  console.log('Uploaded: ', uploaded)
+
+  const picture = new Picture({
+    title: file.name,
+    image: uploaded.secure_url,
+    thumb: uploaded.public_id,
+    user: user._id
+  })
+
+  const savedPicture = await picture.save()
+  user.pictures = user.pictures.concat(savedPicture._id)
+  await user.save()
+
+  const newSavedPicture = await Picture
+    .findById(savedPicture._id)
+    .populate('user', { username: 1, email: 1 })
+
+  return response.json(newSavedPicture.toJSON())
+})
 
 //******************* Get all ***********************************/
 picturesRouter.get('/', async (request, response) => {
@@ -64,5 +139,9 @@ picturesRouter.delete('/:id', routeAuth, async (request, response) => {
   await Picture.findByIdAndRemove(request.params.id)
   response.status(204).end()
 })
+
+
+
+
 
 module.exports = picturesRouter

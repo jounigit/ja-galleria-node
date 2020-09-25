@@ -14,6 +14,12 @@ const pictureSchema = new mongoose.Schema({
     slugPaddingSize: 4,
     unique: true
   },
+  image: {
+    type: String
+  },
+  thumb: {
+    type: String
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

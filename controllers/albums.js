@@ -35,7 +35,7 @@ albumsRouter.post('/', routeAuth, async (request, response) => {
 
   const newSavedAlbum = await Album
     .findById(savedAlbum._id)
-    .populate('user', { username: 1, email: 1 })
+    // .populate('user', { username: 1, email: 1 })
 
   return response.json(newSavedAlbum.toJSON())
 
