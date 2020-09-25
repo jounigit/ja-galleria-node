@@ -8,6 +8,16 @@ usersRouter.get('/', async (request, response) => {
   response.json(users.map(u => u.toJSON()))
 })
 
+//******************* Get one ***********************************/
+usersRouter.get('/:id', async (request, response) => {
+  const user = await User.findById(request.params.id)
+  if (user) {
+    response.json(user.toJSON())
+  } else {
+    response.status(404).end()
+  }
+})
+
 //******************* Create new ***********************************/
 usersRouter.post('/', async (request, response) => {
   const body = request.body
