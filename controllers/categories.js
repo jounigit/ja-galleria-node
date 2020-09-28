@@ -19,7 +19,6 @@ categoriesRouter.post('/', routeAuth, async (request, response) => {
 
   const user = await User
     .findById(userID)
-    .populate('album', { title: 1 })
 
   const category = new Category({
     title,
@@ -33,7 +32,7 @@ categoriesRouter.post('/', routeAuth, async (request, response) => {
 
   const newSavedCategory = await Category
     .findById(savedCategory._id)
-    .populate('user', { username: 1, email: 1 })
+    // .populate('user', { username: 1, email: 1 })
 
   return response.json(newSavedCategory.toJSON())
 
