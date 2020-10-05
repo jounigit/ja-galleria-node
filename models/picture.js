@@ -23,6 +23,12 @@ const pictureSchema = new mongoose.Schema({
   thumb: {
     type: String
   },
+  publicID:{
+    type: String
+  },
+  publicIDThumb:{
+    type: String
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

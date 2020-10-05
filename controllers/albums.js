@@ -63,12 +63,23 @@ albumsRouter.post('/', routeAuth, async (request, response) => {
 
 //******************* Update one ***********************************/
 albumsRouter.put('/:id', routeAuth, async (request, response) => {
-  const { title, content, category, pictureID } = request.body
+  const { title, content, category, pictureID, removePicture } = request.body
+
+  console.log('Album request: ', request.body)
 
   // let updatedPictures
   let albumToUpdate
 
   const album = await Album.findById(request.params.id)
+
+  if (removePicture) {
+    console.log('PICS: ', album.pictures)
+    const updatedPictures = album.pictures.filter(p => !removePicture.includes(p))
+    console.log('UP PICS: ', updatedPictures)
+    albumToUpdate = {
+      pictures: updatedPictures
+    }
+  }
 
   if (pictureID) {
     const updatedPictures = album.pictures.concat(pictureID)
@@ -76,8 +87,8 @@ albumsRouter.put('/:id', routeAuth, async (request, response) => {
     albumToUpdate = {
       pictures: updatedPictures
     }
-
-  } else {
+  }
+  if ( !pictureID && !removePicture ) {
     albumToUpdate = {
       title,
       content,

@@ -50,26 +50,38 @@ picturesRouter.post('/upload', routeAuth, async (request, response) => {
   const userID = request.user.id
   const width = 1600
   const height = 1200
+  let pictureToSave
 
   const user = await User.findById(userID)
   const orientation = await getOrientation(file.tempFilePath)
 
   const options = orientation && await setOptions(width, height, orientation)
 
-  const uploaded = await cloudinary.uploader.upload(file.tempFilePath, options, (error, result) => {
+  const newPic = await cloudinary.uploader.upload(file.tempFilePath, options, (error, result) => {
     if (error) response.send({ error })
     return ({ result })
   })
-  console.log('Uploaded: ', uploaded)
+  console.log('Uploaded: ', newPic)
 
-  const picture = new Picture({
+
+  const makeUrl = (size, c, res_type, type, p_id, format) => {
+    const trans = `w_${size},h_${size},${c}`
+    const url = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}`
+    // eslint-disable-next-line quotes
+    return `${url}/${res_type}/${type}/${trans}/${p_id}.${format}`
+  }
+
+  const thumbUrl = makeUrl(500, 'c_fit', newPic.resource_type, newPic.type, newPic.public_id, newPic.format)
+  console.log('Thumb: ', thumbUrl)
+  pictureToSave = new Picture({
     title: file.name,
-    image: uploaded.secure_url,
-    thumb: uploaded.public_id,
+    image: newPic.secure_url,
+    thumb: thumbUrl,
+    publicID: newPic.public_id,
     user: user._id
   })
 
-  const savedPicture = await picture.save()
+  const savedPicture = await pictureToSave.save()
   user.pictures = user.pictures.concat(savedPicture._id)
   await user.save()
 
@@ -138,7 +150,7 @@ picturesRouter.put('/:id', routeAuth, async (request, response) => {
 picturesRouter.delete('/:id', routeAuth, async (request, response) => {
   const picture = await Picture.findById(request.params.id)
 
-  cloudinary.uploader.destroy(picture.thumb, async result => {
+  cloudinary.uploader.destroy(picture.publicID, async result => {
     console.log('Delete: ', result)
     await Picture.findByIdAndRemove(request.params.id)
   }).then(() =>
