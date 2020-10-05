@@ -136,8 +136,15 @@ picturesRouter.put('/:id', routeAuth, async (request, response) => {
 
 //******************* Delete one ***********************************/
 picturesRouter.delete('/:id', routeAuth, async (request, response) => {
-  await Picture.findByIdAndRemove(request.params.id)
-  response.status(204).end()
+  const picture = await Picture.findById(request.params.id)
+
+  cloudinary.uploader.destroy(picture.thumb, async result => {
+    console.log('Delete: ', result)
+    await Picture.findByIdAndRemove(request.params.id)
+  }).then(() =>
+    response.status(204).json({ message: 'Image deleted successfully' })
+  )
+
 })
 
 

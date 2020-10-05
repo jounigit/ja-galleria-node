@@ -8,6 +8,7 @@ const routeAuth = jwtAuth({ secret: process.env.SECRET })
 //******************* Get all ***********************************/
 categoriesRouter.get('/', async (request, response) => {
   const categories = await Category.find({})
+    .populate( 'user', { username: 1 } )
 
   response.json(categories.map(category => category.toJSON()))
 })
@@ -60,6 +61,7 @@ categoriesRouter.put('/:id', routeAuth, async (request, response) => {
 
   await Category.findByIdAndUpdate(request.params.id, category)
   const updatedCategory = await Category.findById(request.params.id)
+    .populate('user', { username: 1, email: 1 })
   return response.json(updatedCategory.toJSON())
 })
 

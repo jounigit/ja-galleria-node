@@ -14,6 +14,9 @@ const pictureSchema = new mongoose.Schema({
     slugPaddingSize: 4,
     unique: true
   },
+  content: {
+    type: String
+  },
   image: {
     type: String
   },

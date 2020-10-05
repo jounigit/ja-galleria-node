@@ -10,14 +10,14 @@ loginRouter.get('/', (request, response) => {
 loginRouter.post('/', async (request, response) => {
   const body = request.body
 
-  const user = await User.findOne({ username: body.username })
+  const user = await User.findOne({ email: body.email })
   const passwordCorrect = user === null
     ? false
     : await bcrypt.compare(body.password, user.passwordHash)
 
   if (!(user && passwordCorrect)) {
     return response.status(401).json({
-      error: 'invalid username or password'
+      error: 'invalid email or password'
     })
   }
 
@@ -30,7 +30,7 @@ loginRouter.post('/', async (request, response) => {
 
   response
     .status(200)
-    .send({ token, username: user.username, email: user.email })
+    .send({ token, user: user.username, email: user.email })
 })
 
 module.exports = loginRouter
