@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const slug = require('mongoose-slug-updater')
 const beautifyUnique = require('mongoose-beautiful-unique-validation')
-// mongoose.plugin(slug)
 
 const albumSchema = new mongoose.Schema({
   title: {
@@ -40,7 +39,6 @@ albumSchema.set('toJSON', {
   }
 })
 
-// albumSchema.set('autoIndex', false)
 albumSchema.plugin(beautifyUnique)
 albumSchema.plugin(slug)
 

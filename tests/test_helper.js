@@ -38,12 +38,15 @@ const initialAlbums = [
 const initialPictures = [
   {
     title: 'Picture 1',
+    image: 'image.jpg'
   },
   {
-    title: 'Picture 2'
+    title: 'Picture 2',
+    image: 'image.jpg'
   },
   {
-    title: 'Picture 3'
+    title: 'Picture 3',
+    image: 'image.jpg'
   },
 ]
 

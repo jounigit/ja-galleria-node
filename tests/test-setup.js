@@ -32,18 +32,6 @@ async function dropAllCollections () {
 
 module.exports = {
   setupDB () {
-    // let token
-    // Connect to Mongoose
-    // beforeAll(async () => {
-    //   const url = `mongodb://127.0.0.1/${databaseName}`
-    //   await mongoose.connect(url, { useNewUrlParser: true })
-    // })
-
-    // beforeAll(async () => {
-    //   await helper.addTestUser()
-    //   // eslint-disable-next-line no-unused-vars
-    //   token = await helper.getToken()
-    // })
 
     // Cleans up database between each test
     afterEach(async () => {

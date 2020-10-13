@@ -43,8 +43,16 @@ pictureSchema.set('toJSON', {
   }
 })
 
-// pictureSchema.set('autoIndex', false)
 pictureSchema.plugin(beautifyUnique)
 pictureSchema.plugin(slug)
+
+pictureSchema.pre('remove', function (next) {
+  const picture = this
+  picture.model('Album').update(
+    { pictures: picture._id },
+    { $pull: { pictures: picture._id } },
+    { multi: true },
+    next)
+})
 
 module.exports = mongoose.model('Picture', pictureSchema)

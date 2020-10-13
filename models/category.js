@@ -35,8 +35,16 @@ categorySchema.set('toJSON', {
   }
 })
 
-// categorySchema.set('autoIndex', false)
 categorySchema.plugin(beautifyUnique)
 categorySchema.plugin(slug)
+
+categorySchema.pre('remove', function (next) {
+  const category = this
+  category.model('Album').update(
+    { category: category._id },
+    { $unset: { category: '' } },
+    { multi: true },
+    next)
+})
 
 module.exports = mongoose.model('Category', categorySchema)

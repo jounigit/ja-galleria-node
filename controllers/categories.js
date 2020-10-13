@@ -67,8 +67,22 @@ categoriesRouter.put('/:id', routeAuth, async (request, response) => {
 
 //******************* Delete one ***********************************/
 categoriesRouter.delete('/:id', routeAuth, async (request, response) => {
-  await Category.findByIdAndRemove(request.params.id)
+
+  const category = await Category.findById(request.params.id)
+
+  const removed = await category.remove()
+
+  console.log('Removed: ', removed)
   response.status(204).end()
+
+  // await Category.findById(request.params.id, (err, category) => {
+  //   if(err) return err
+  //   category.remove((categoryErr, removedCategory) => {
+  //     if(categoryErr) return categoryErr
+  //     console.log('Removed: ', removedCategory)
+  //     response.status(204).end()
+  //   })
+  // })
 })
 
 module.exports = categoriesRouter

@@ -8,12 +8,20 @@ loginRouter.get('/', (request, response) => {
   response.send('OK')
 })
 loginRouter.post('/', async (request, response) => {
-  const body = request.body
+  const { username, email, password } = request.body
+  let user
 
-  const user = await User.findOne({ email: body.email })
+  if (username) {
+    user = await User.findOne({ username })
+  }
+
+  if (email) {
+    user = await User.findOne({ email: email })
+  }
+
   const passwordCorrect = user === null
     ? false
-    : await bcrypt.compare(body.password, user.passwordHash)
+    : await bcrypt.compare(password, user.passwordHash)
 
   if (!(user && passwordCorrect)) {
     return response.status(401).json({
