@@ -102,7 +102,7 @@ const addTestUser = async () => {
     passwordHash
   }
 
-  await User.create(testUser)
+  return await User.create(testUser)
 }
 
 const getToken = async () => {
@@ -132,6 +132,9 @@ const nonExistingId = async (collection) => {
 }
 
 module.exports = {
+  username,
+  email,
+  password,
   initialCategories,
   initialAlbums,
   initialPictures,

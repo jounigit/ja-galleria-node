@@ -5,6 +5,7 @@ const Album = require('../models/album')
 const jwtAuth = require('express-jwt')
 const _ = require('underscore-node')
 
+// eslint-disable-next-line no-undef
 const routeAuth = jwtAuth({ secret: process.env.SECRET })
 
 //******************* Get all ***********************************/

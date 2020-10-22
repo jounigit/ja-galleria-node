@@ -1,17 +1,12 @@
 module.exports = {
   'env': {
+    'browser': true,
     'commonjs': true,
-    'es2020': true,
-    'node': true
+    'es2021': true
   },
-  parser: 'babel-eslint',
   'extends': 'eslint:recommended',
-  'globals': {
-    'Atomics': 'readonly',
-    'SharedArrayBuffer': 'readonly'
-  },
   'parserOptions': {
-    'ecmaVersion': 11
+    'ecmaVersion': 12
   },
   'rules': {
     'indent': [

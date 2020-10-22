@@ -1,6 +1,10 @@
 const bcrypt = require('bcrypt')
 const usersRouter = require('express').Router()
 const User = require('../models/user')
+const jwtAuth = require('express-jwt')
+
+// eslint-disable-next-line no-undef
+const routeAuth = jwtAuth({ secret: process.env.SECRET })
 
 //******************* Get all ***********************************/
 usersRouter.get('/', async (request, response) => {
@@ -34,6 +38,17 @@ usersRouter.post('/', async (request, response) => {
   const savedUser = await user.save()
 
   response.json(savedUser)
+})
+
+//******************* Delete user ***********************************/
+usersRouter.delete('/:id', routeAuth, async (request, response) => {
+  console.log('User controller ID: ', request.params.id)
+  const user = await User.findById(request.params.id)
+
+  const removed = await user.remove()
+
+  console.log('User controller removed: ', removed)
+  response.status(204).end()
 })
 
 module.exports = usersRouter
