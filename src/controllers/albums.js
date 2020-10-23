@@ -34,9 +34,9 @@ albumsRouter.get('/:id', async (request, response) => {
 albumsRouter.post('/', routeAuth, async (request, response) => {
   const { title, content, category } = request.body
   const userID = request.user.id
-
+  console.log('Album create requests: ', request)
   const user = await User.findById(userID)
-  console.log('Album user: ', user)
+  // console.log('Album user: ', user)
 
   const album = new Album({
     title,
