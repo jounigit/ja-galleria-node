@@ -7,8 +7,11 @@ const { promisify } = require('util')
 const sizeOf = promisify(require('image-size'))
 
 cloudinary.config({
+  // eslint-disable-next-line no-undef
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  // eslint-disable-next-line no-undef
   api_key: process.env.CLOUDINARY_API_KEY,
+  // eslint-disable-next-line no-undef
   api_secret: process.env.CLOUDINARY_API_SECRET
 })
 
@@ -21,6 +24,7 @@ const uploadOptions = (width = '', height = '') => {
   }
 }
 
+// eslint-disable-next-line no-undef
 const routeAuth = jwtAuth({ secret: process.env.SECRET })
 
 //******************* Upload helpers ***********************************/
