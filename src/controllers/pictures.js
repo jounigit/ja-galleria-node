@@ -155,8 +155,7 @@ picturesRouter.delete('/:id', routeAuth, async (request, response) => {
   const picture = await Picture.findById(request.params.id)
 
   if(!picture.publicID || picture.publicID ==='') {
-    const removed = await picture.remove()
-    // console.log('Removed: ', removed)
+    await picture.remove()
     return response.status(204).end()
   }
 

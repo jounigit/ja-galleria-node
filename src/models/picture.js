@@ -47,10 +47,17 @@ pictureSchema.plugin(beautifyUnique)
 pictureSchema.plugin(slug)
 
 pictureSchema.pre('remove', function (next) {
-  const picture = this
-  picture.model('Album').update(
-    { pictures: picture._id },
-    { $pull: { pictures: picture._id } },
+  this.model('User').update(
+    { pictures: this._id },
+    { $pull: { pictures: this._id } },
+    { multi: true },
+    next)
+})
+
+pictureSchema.pre('remove', function (next) {
+  this.model('Album').update(
+    { pictures: this._id },
+    { $pull: { pictures: this._id } },
     { multi: true },
     next)
 })

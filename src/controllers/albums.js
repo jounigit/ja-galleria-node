@@ -23,10 +23,11 @@ albumsRouter.get('/:id', async (request, response) => {
   const album = await Album
     .findById(request.params.id)
     // .populate('category', { title: 1 })
+
   if (album) {
     response.json(album.toJSON())
   } else {
-    response.status(404).end()
+    response.status(404).send({ error: 'Not Found' })
   }
 })
 
@@ -149,7 +150,9 @@ albumsRouter.delete('/:id/:picture', routeAuth, async (request, response) => {
 
 //******************* Delete one ***********************************/
 albumsRouter.delete('/:id', routeAuth, async (request, response) => {
-  await Album.findByIdAndRemove(request.params.id)
+  const album = await Album.findById(request.params.id)
+  console.log('Album Deteting!!!')
+  await album.remove()
   response.status(204).end()
 })
 

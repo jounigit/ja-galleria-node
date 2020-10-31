@@ -42,4 +42,12 @@ albumSchema.set('toJSON', {
 albumSchema.plugin(beautifyUnique)
 albumSchema.plugin(slug)
 
+albumSchema.pre('remove', function (next) {
+  this.model('User').update(
+    { albums: this._id },
+    { $pull: { albums: this._id } },
+    { multi: true },
+    next)
+})
+
 module.exports = mongoose.model('Album', albumSchema)

@@ -42,7 +42,7 @@ usersRouter.post('/', async (request, response) => {
 
 //******************* Delete user ***********************************/
 usersRouter.delete('/:id', routeAuth, async (request, response) => {
-  console.log('User controller ID: ', request.params.id)
+  // console.log('User controller delete ID: ', request.params.id)
   const user = await User.findById(request.params.id)
 
   const removed = await user.remove()

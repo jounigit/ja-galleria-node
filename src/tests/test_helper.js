@@ -92,25 +92,25 @@ const username = 'test'
 const email = 'test@mail.com'
 const password = 'testpassi'
 
-const addTestUser = async () => {
+const addTestUser = async (user=username, mail=email, pass=password) => {
   const saltRounds = 10
-  const passwordHash = await bcrypt.hash(password, saltRounds)
+  const passwordHash = await bcrypt.hash(pass, saltRounds)
 
   const testUser = {
-    username,
-    email,
+    username: user,
+    email: mail,
     passwordHash
   }
 
   return await User.create(testUser)
 }
 
-const getToken = async () => {
+const getToken = async (user=username, pass=password) => {
   const response = await api
     .post('/api/login')
     .send({
-      username,
-      password,
+      username:user,
+      password:pass,
     })
 
   console.log('TOKEN: ', response.body.token)

@@ -47,4 +47,12 @@ categorySchema.pre('remove', function (next) {
     next)
 })
 
+categorySchema.pre('remove', function (next) {
+  this.model('User').update(
+    { categories: this._id },
+    { $pull: { categories: this._id } },
+    { multi: true },
+    next)
+})
+
 module.exports = mongoose.model('Category', categorySchema)

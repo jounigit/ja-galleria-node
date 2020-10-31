@@ -48,7 +48,7 @@ describe('with initial albums', () => {
 
 //****************** fails ************************************/
 // status code 404
-describe('if category does not exist', () => {
+describe('if album does not exist', () => {
 
   test('fails with statuscode 404', async () => {
     const validNonexistingId = await helper.nonExistingId(Album)

@@ -43,15 +43,28 @@ userSchema.set('toJSON', {
 
 userSchema.plugin(beautifyUnique)
 
-// userSchema.pre('remove', function (next) {
-//   const user = this
-//   user.model('Album').update(
-//     { user: user._id },
-//     { $unset: { user: '' } },
-//     { multi: true },
-//     next)
-// })
+userSchema.pre('remove', function (next) {
+  const user = this
+  user.model('Album').remove(
+    { user: user._id },
+    { multi: true },
+    next)
+})
 
-const User = mongoose.model('User', userSchema)
+userSchema.pre('remove', function (next) {
+  const user = this
+  user.model('Category').remove(
+    { user: user._id },
+    { multi: true },
+    next)
+})
 
-module.exports = User
+userSchema.pre('remove', function (next) {
+  const user = this
+  user.model('Picture').remove(
+    { user: user._id },
+    { multi: true },
+    next)
+})
+
+module.exports = mongoose.model('User', userSchema)
