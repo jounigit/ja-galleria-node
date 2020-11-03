@@ -57,6 +57,7 @@ picturesRouter.post('/upload', routeAuth, async (request, response) => {
   let pictureToSave
 
   const user = await User.findById(userID)
+  console.log('User: ', user)
   const orientation = await getOrientation(file.tempFilePath)
 
   const options = orientation && await setOptions(width, height, orientation)
@@ -82,7 +83,7 @@ picturesRouter.post('/upload', routeAuth, async (request, response) => {
     image: newPic.secure_url,
     thumb: thumbUrl,
     publicID: newPic.public_id,
-    user: user._id
+    user: user.id
   })
 
   const savedPicture = await pictureToSave.save()
