@@ -125,6 +125,7 @@ albumsRouter.put('/:id/:picture', routeAuth, async (request, response) => {
 
   await Album.findByIdAndUpdate(albumID, albumToUpdate)
   const updatedAlbum = await Album.findById(albumID)
+  console.log('Update album: ', updatedAlbum.toJSON())
   return response.json(updatedAlbum.toJSON())
 
 })

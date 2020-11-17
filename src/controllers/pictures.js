@@ -71,6 +71,7 @@ picturesRouter.post('/upload', routeAuth, async (request, response) => {
 
   const makeUrl = (size, c, res_type, type, p_id, format) => {
     const trans = `w_${size},h_${size},${c}`
+    // eslint-disable-next-line no-undef
     const url = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}`
     // eslint-disable-next-line quotes
     return `${url}/${res_type}/${type}/${trans}/${p_id}.${format}`

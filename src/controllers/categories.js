@@ -9,8 +9,8 @@ const routeAuth = jwtAuth({ secret: process.env.SECRET })
 //******************* Get all ***********************************/
 categoriesRouter.get('/', async (request, response) => {
   const categories = await Category.find({})
+    // .populate( { path: 'albums', model: 'Album' } )
     .populate( 'user', { username: 1 } )
-
   response.json(categories.map(category => category.toJSON()))
 })
 
