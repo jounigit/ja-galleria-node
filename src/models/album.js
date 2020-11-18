@@ -50,4 +50,12 @@ albumSchema.pre('remove', function (next) {
     next)
 })
 
+albumSchema.pre('remove', function (next) {
+  this.model('Category').update(
+    { albums: this._id },
+    { $pull: { albums: this._id } },
+    { multi: true },
+    next)
+})
+
 module.exports = mongoose.model('Album', albumSchema)

@@ -70,14 +70,22 @@ albumsRouter.post('/', routeAuth, async (request, response) => {
 albumsRouter.put('/:id', routeAuth, async (request, response) => {
   const { category } = request.body
   const albumID = request.params.id
+  const album = await Album.findById(albumID)
 
-  await Album.findByIdAndUpdate(albumID, request.body)
+  if( category && album.category && category !== album.category) {
+    const oldCategory = await Category.findById(album.category)
+    const newAlbums = oldCategory.albums.filter(item => item.toString() !== album.id)
+    oldCategory.albums = newAlbums
+    await oldCategory.save()
+  }
 
   if( category || !category==='') {
     const categoryToUpdate = await Category.findById(category)
     categoryToUpdate.albums = categoryToUpdate.albums.concat(albumID)
     await categoryToUpdate.save()
   }
+
+  await album.update(request.body)
 
   const updatedAlbum = await Album.findById(albumID)
     .populate('user', { username: 1, email: 1 })
