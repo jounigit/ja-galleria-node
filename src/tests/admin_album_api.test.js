@@ -19,12 +19,12 @@ describe('authorized with a valid token', () => {
   })
 
   beforeEach( async () => {
-    const atStart = await Album.insertMany(helper.initialAlbums)
-    console.log('Albums init:', atStart)
+    await Album.insertMany(helper.initialAlbums)
+    // console.log('Albums init:', atStart)
   })
 
   // create
-  test.only('succeeds adding new album', async () => {
+  test('succeeds adding new album', async () => {
 
     await api
       .post('/api/albums')

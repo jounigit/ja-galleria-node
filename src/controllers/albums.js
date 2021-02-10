@@ -40,10 +40,10 @@ albumsRouter.post('/', routeAuth, async (request, response) => {
   // console.log('Album user: ', user)
 
   const album = new Album({
-    // title,
-    // content,
-    // user: user._id,
-    // category
+    title,
+    content,
+    user: user._id,
+    category
   })
 
   const savedAlbum = await album.save()
@@ -51,6 +51,7 @@ albumsRouter.post('/', routeAuth, async (request, response) => {
   user.albums = user.albums.concat(savedAlbum._id)
   await user.save()
 
+  // update category document
   if( category || !category==='') {
     console.log('cat if: ', category)
     const categoryToUpdate = await Category.findById(category)
