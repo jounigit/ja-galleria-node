@@ -39,18 +39,18 @@ categorySchema.plugin(beautifyUnique)
 categorySchema.plugin(slug)
 
 categorySchema.pre('remove', function (next) {
-  const category = this
-  category.model('Album').update(
-    { category: category._id },
-    { $unset: { category: '' } },
+  this.model('User').updateOne(
+    { categories: this._id },
+    { $pull: { categories: this._id } },
     { multi: true },
     next)
 })
 
 categorySchema.pre('remove', function (next) {
-  this.model('User').update(
-    { categories: this._id },
-    { $pull: { categories: this._id } },
+  const category = this
+  category.model('Album').updateMany(
+    { category: category._id },
+    { $unset: { category: '' } },
     { multi: true },
     next)
 })

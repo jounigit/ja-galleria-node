@@ -43,7 +43,7 @@ albumSchema.plugin(beautifyUnique)
 albumSchema.plugin(slug)
 
 albumSchema.pre('remove', function (next) {
-  this.model('User').update(
+  this.model('User').updateOne(
     { albums: this._id },
     { $pull: { albums: this._id } },
     { multi: true },
@@ -51,7 +51,7 @@ albumSchema.pre('remove', function (next) {
 })
 
 albumSchema.pre('remove', function (next) {
-  this.model('Category').update(
+  this.model('Category').updateOne(
     { albums: this._id },
     { $pull: { albums: this._id } },
     { multi: true },

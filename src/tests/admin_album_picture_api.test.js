@@ -82,6 +82,9 @@ describe('delete relation after deleting picture', () => {
   test('delete picture and album not have picture', async () => {
     await updateAlbum(album1.id, picture1.id)
     await updateAlbum(album1.id, picture2.id)
+
+    const album1Init = await Album.findById(album1.id)
+    console.log('Album 1 init: ', album1Init)
     // delete picture
     await api
       .delete(`/api/pictures/${picture1.id}`)
@@ -89,6 +92,7 @@ describe('delete relation after deleting picture', () => {
       .expect(204)
 
     const album1End = await Album.findById(album1.id)
+    console.log('Album 1 end: ', album1End)
 
     expect(album1End.pictures).toHaveLength(1)
   })

@@ -4,10 +4,10 @@ const helper = require('./test_helper')
 const app = require('../app')
 const api = supertest(app)
 const { setupDB } = require('./test-setup')
-const Album = require('../models/album')
 
 setupDB()
 
+const Album = require('../models/album')
 
 let token
 
@@ -19,11 +19,12 @@ describe('authorized with a valid token', () => {
   })
 
   beforeEach( async () => {
-    await Album.insertMany(helper.initialAlbums)
+    const atStart = await Album.insertMany(helper.initialAlbums)
+    console.log('Albums init:', atStart)
   })
 
   // create
-  test('succeeds adding new album', async () => {
+  test.only('succeeds adding new album', async () => {
 
     await api
       .post('/api/albums')

@@ -12,7 +12,7 @@ let testUser
 
 //********************** succeeds ******************************/
 
-describe('valid email and password', () => {
+describe('Tests with valid email and password', () => {
   const username = helper.username
   const password = helper.password
   const newUser = 'newuser'

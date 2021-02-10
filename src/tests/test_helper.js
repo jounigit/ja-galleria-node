@@ -113,7 +113,7 @@ const getToken = async (user=username, pass=password) => {
       password:pass,
     })
 
-  console.log('TOKEN: ', response.body.token)
+  console.log('GET VALID TOKEN: ', response.body.token)
   return response.body.token
 }
 

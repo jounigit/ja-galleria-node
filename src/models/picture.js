@@ -23,6 +23,9 @@ const pictureSchema = new mongoose.Schema({
   thumb: {
     type: String
   },
+  landscape: {
+    type: String
+  },
   publicID:{
     type: String
   },
@@ -47,7 +50,7 @@ pictureSchema.plugin(beautifyUnique)
 pictureSchema.plugin(slug)
 
 pictureSchema.pre('remove', function (next) {
-  this.model('User').update(
+  this.model('User').updateOne(
     { pictures: this._id },
     { $pull: { pictures: this._id } },
     { multi: true },
@@ -55,7 +58,8 @@ pictureSchema.pre('remove', function (next) {
 })
 
 pictureSchema.pre('remove', function (next) {
-  this.model('Album').update(
+  console.log('Picture Schema middleware')
+  this.model('Album').updateMany(
     { pictures: this._id },
     { $pull: { pictures: this._id } },
     { multi: true },

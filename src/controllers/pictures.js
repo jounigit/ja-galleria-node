@@ -15,6 +15,10 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 })
 
+// eslint-disable-next-line no-undef
+const routeAuth = jwtAuth({ secret: process.env.SECRET })
+
+//******************* Upload helpers ***********************************/
 const uploadOptions = (width = '', height = '') => {
   return {
     public_id: Date.now(),
@@ -23,11 +27,6 @@ const uploadOptions = (width = '', height = '') => {
     crop: 'scale'
   }
 }
-
-// eslint-disable-next-line no-undef
-const routeAuth = jwtAuth({ secret: process.env.SECRET })
-
-//******************* Upload helpers ***********************************/
 
 const getOrientation = async (file) => {
   try {
@@ -53,7 +52,7 @@ picturesRouter.post('/upload', routeAuth, async (request, response) => {
   console.log('Original: ', file)
   const userID = request.user.id
   const width = 1600
-  const height = 1200
+  const height = 1400
   let pictureToSave
 
   const user = await User.findById(userID)
@@ -63,26 +62,43 @@ picturesRouter.post('/upload', routeAuth, async (request, response) => {
   const options = orientation && await setOptions(width, height, orientation)
 
   const newPic = await cloudinary.uploader.upload(file.tempFilePath, options, (error, result) => {
-    if (error) response.send({ error })
+    if (error) response.send({ error: 'could not upload image' })
     return ({ result })
   })
-  console.log('Uploaded: ', newPic)
+  // console.log('Uploaded: ', newPic)
+  // console.log('UPLOADED width: ', newPic.width)
 
+  const ratio = 3/4
+  const newPicWidth = newPic.width
+  const newLanPicWidth = 1000
+  // const newPicHeight = newPic.height
+  const newPortToLanHeight = Math.floor(newPicWidth * ratio)
+  const newLanToLanHeight = Math.floor(newLanPicWidth * ratio)
 
-  const makeUrl = (size, c, res_type, type, p_id, format) => {
-    const trans = `w_${size},h_${size},${c}`
+  const makeUrl = (trans, res_type, type, p_id, format) => {
     // eslint-disable-next-line no-undef
     const url = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}`
     // eslint-disable-next-line quotes
     return `${url}/${res_type}/${type}/${trans}/${p_id}.${format}`
   }
 
-  const thumbUrl = makeUrl(500, 'c_fit', newPic.resource_type, newPic.type, newPic.public_id, newPic.format)
-  console.log('Thumb: ', thumbUrl)
+  // const trans = `w_${size},h_${size},${c}`
+  const transThumb = 'w_500,h_500,c_fit'
+  const transPortToLan = `w_${newPicWidth},h_${newPortToLanHeight},c_fill,g_auto`
+  const transLanToLan = `w_${newLanPicWidth},h_${newLanToLanHeight},c_fill,g_auto`
+
+  const thumbUrl = makeUrl(transThumb, newPic.resource_type, newPic.type, newPic.public_id, newPic.format)
+  const lanToLanUrl = makeUrl(transLanToLan, newPic.resource_type, newPic.type, newPic.public_id, newPic.format)
+  const portToLanUrl = makeUrl(transPortToLan, newPic.resource_type, newPic.type, newPic.public_id, newPic.format)
+
+  // console.log('UUSI Thumb: ', thumbUrl)
+  // console.log('UUSI LAND: ', landscapePicUrl)
+
   pictureToSave = new Picture({
     title: file.name,
     image: newPic.secure_url,
     thumb: thumbUrl,
+    landscape: (orientation === 'isPortrait') ? portToLanUrl : lanToLanUrl,
     publicID: newPic.public_id,
     user: user.id
   })
@@ -94,6 +110,9 @@ picturesRouter.post('/upload', routeAuth, async (request, response) => {
   const newSavedPicture = await Picture
     .findById(savedPicture._id)
     .populate('user', { username: 1, email: 1 })
+
+
+  console.log('UUSI KUVA: ', newSavedPicture)
 
   return response.json(newSavedPicture.toJSON())
 })
@@ -155,18 +174,22 @@ picturesRouter.put('/:id', routeAuth, async (request, response) => {
 //******************* Delete one ***********************************/
 picturesRouter.delete('/:id', routeAuth, async (request, response) => {
   const picture = await Picture.findById(request.params.id)
+  console.log('Pic to delete: ', picture)
 
+  /** if cloudinary id doesn't exist, remove only link  */
   if(!picture.publicID || picture.publicID ==='') {
     await picture.remove()
     return response.status(204).end()
   }
 
-  cloudinary.uploader.destroy(picture.publicID, async result => {
-    console.log('Delete: ', result)
+  cloudinary.uploader.destroy(picture.publicID, async (error, result) => {
+    if (error) response.send({ error: 'could not delete image or image does not exists' })
+    console.log('Cloudinary delete ok: ', result)
     await picture.remove()
-  }).then(() =>
-    response.status(204).json({ message: 'Image deleted successfully' })
-  )
+  })
+    .then(() =>
+      response.status(204).json({ message: 'Image deleted successfully' })
+    )
 
 })
 

@@ -45,7 +45,7 @@ userSchema.plugin(beautifyUnique)
 
 userSchema.pre('remove', function (next) {
   const user = this
-  user.model('Album').remove(
+  user.model('Album').deleteMany(
     { user: user._id },
     { multi: true },
     next)
@@ -53,7 +53,7 @@ userSchema.pre('remove', function (next) {
 
 userSchema.pre('remove', function (next) {
   const user = this
-  user.model('Category').remove(
+  user.model('Category').deleteMany(
     { user: user._id },
     { multi: true },
     next)
@@ -61,7 +61,7 @@ userSchema.pre('remove', function (next) {
 
 userSchema.pre('remove', function (next) {
   const user = this
-  user.model('Picture').remove(
+  user.model('Picture').deleteMany(
     { user: user._id },
     { multi: true },
     next)

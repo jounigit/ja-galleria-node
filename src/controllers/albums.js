@@ -13,7 +13,7 @@ albumsRouter.get('/', async (request, response) => {
   const albums = await Album
     .find({})
     .populate( 'user', { username: 1 } )
-    .populate('category', { title: 1 })
+    // .populate('category', { title: 1 })
 
   response.json(albums.map(album => album.toJSON()))
 })
@@ -35,15 +35,15 @@ albumsRouter.get('/:id', async (request, response) => {
 albumsRouter.post('/', routeAuth, async (request, response) => {
   const { title, content, category } = request.body
   const userID = request.user.id
-  console.log('Album create requests: ', request)
+  console.log('Album create requests: ', request,' : ', title,' ', content)
   const user = await User.findById(userID)
   // console.log('Album user: ', user)
 
   const album = new Album({
-    title,
-    content,
-    user: user._id,
-    category
+    // title,
+    // content,
+    // user: user._id,
+    // category
   })
 
   const savedAlbum = await album.save()
@@ -85,7 +85,7 @@ albumsRouter.put('/:id', routeAuth, async (request, response) => {
     await categoryToUpdate.save()
   }
 
-  await album.update(request.body)
+  await album.updateOne(request.body)
 
   const updatedAlbum = await Album.findById(albumID)
     .populate('user', { username: 1, email: 1 })
