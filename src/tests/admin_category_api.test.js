@@ -20,8 +20,8 @@ describe('authorized with a valid token', () => {
   })
 
   beforeEach( async () => {
-    const atStart = await Category.insertMany(helper.initialCategories)
-    console.log('Albums init:', atStart)
+    await Category.insertMany(helper.initialCategories)
+    // console.log('Albums init:', atStart)
   })
 
   // create
@@ -37,7 +37,7 @@ describe('authorized with a valid token', () => {
   })
 
   // update
-  test.only('succeeds update with valid id',  async  () => {
+  test('succeeds update with valid id',  async  () => {
     const categoriesAtStart = await helper.allInCollection(Category)
     const category = categoriesAtStart[0]
 
@@ -58,7 +58,7 @@ describe('authorized with a valid token', () => {
   })
 
   // delete
-  test.only('succeeds delete with valid id', async () => {
+  test('succeeds delete with valid id', async () => {
     const categoriesAtStart = await helper.allInCollection(Category)
     const categoryToDelete = categoriesAtStart[0]
     // console.log('ALUKSI::', categoriesAtStart)

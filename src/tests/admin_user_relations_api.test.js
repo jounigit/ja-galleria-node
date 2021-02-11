@@ -73,20 +73,20 @@ describe('user deleting', () => {
   })
 
   test('should delete albums with relation', async () => {
-    const current = nonExistingDoc('albums', album1.body.id)
-    const current2 = nonExistingDoc('albums', album2.body.id)
-    console.log('Current: ', current.error)
-    console.log('Current: ', current2.error)
+    nonExistingDoc('albums', album1.body.id)
+    nonExistingDoc('albums', album2.body.id)
+    // console.log('Current: ', current.error)
+    // console.log('Current: ', current2.error)
   })
 
   test('should delete album with relation', async () => {
-    const current = nonExistingDoc('categories', category1.body.id)
-    console.log('Current: ', current.error)
+    nonExistingDoc('categories', category1.body.id)
+    // console.log('Current: ', current.error)
   })
 
   test('should delete album with relation', async () => {
-    const current = nonExistingDoc('pictures', picture1.body.id)
-    console.log('Current: ', current.error)
+    nonExistingDoc('pictures', picture1.body.id)
+    // console.log('Current: ', current.error)
   })
 
 })
@@ -148,7 +148,7 @@ describe('delete doc and user relation', () => {
     album1 = await createDoc('albums', 'Album 1', token)
     await deleteDoc('albums', album1.body.id, token)
     const userNow = await api.get(`/api/users/${testUser.id}`, token)
-    console.log('UserNow: ', userNow.body)
+    // console.log('UserNow: ', userNow.body)
     expect(userNow.body.albums).toStrictEqual([])
   })
 
@@ -156,7 +156,7 @@ describe('delete doc and user relation', () => {
     category1 = await createDoc('categories', 'Album 1', token)
     await deleteDoc('categories', category1.body.id, token)
     const userNow = await api.get(`/api/users/${testUser.id}`, token)
-    console.log('UserNow: ', userNow.body)
+    // console.log('UserNow: ', userNow.body)
     expect(userNow.body.categories).toStrictEqual([])
   })
 
@@ -164,7 +164,7 @@ describe('delete doc and user relation', () => {
     picture1 = await createDoc('pictures', 'picture 1', token)
     await deleteDoc('pictures', picture1.body.id, token)
     const userNow = await api.get(`/api/users/${testUser.id}`, token)
-    console.log('UserNow: ', userNow.body)
+    // console.log('UserNow: ', userNow.body)
     expect(userNow.body.pictures).toStrictEqual([])
   })
 })

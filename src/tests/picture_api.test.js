@@ -19,8 +19,8 @@ describe('with initial pictures', () => {
 
   // get all
   test('succeeds return pictures as json', async () => {
-    const pictures = await helper.allInCollection(Picture)
-    console.log('PICS 1: ', pictures)
+    await helper.allInCollection(Picture)
+    // console.log('PICS 1: ', pictures)
 
     await api
       .get('/api/pictures')
