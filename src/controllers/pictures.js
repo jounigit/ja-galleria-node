@@ -39,7 +39,6 @@ const getOrientation = async (file) => {
 }
 
 const setOptions =  (width, height, orientation) => {
-  // const orientation = await getOrientation(file)
   const ops = orientation === 'isLandscape' ?
     uploadOptions(width, '') :
     uploadOptions('', height)
@@ -56,7 +55,7 @@ picturesRouter.post('/upload', routeAuth, async (request, response) => {
   let pictureToSave
 
   const user = await User.findById(userID)
-  console.log('User: ', user)
+  // console.log('User: ', user)
   const orientation = await getOrientation(file.tempFilePath)
 
   const options = orientation && await setOptions(width, height, orientation)
@@ -112,7 +111,7 @@ picturesRouter.post('/upload', routeAuth, async (request, response) => {
     .populate('user', { username: 1, email: 1 })
 
 
-  console.log('UUSI KUVA: ', newSavedPicture)
+  // console.log('UUSI KUVA: ', newSavedPicture)
 
   return response.json(newSavedPicture.toJSON())
 })
@@ -174,7 +173,7 @@ picturesRouter.put('/:id', routeAuth, async (request, response) => {
 //******************* Delete one ***********************************/
 picturesRouter.delete('/:id', routeAuth, async (request, response) => {
   const picture = await Picture.findById(request.params.id)
-  console.log('Pic to delete: ', picture)
+  // console.log('Pic to delete: ', picture)
 
   /** if cloudinary id doesn't exist, remove only link  */
   if(!picture.publicID || picture.publicID ==='') {

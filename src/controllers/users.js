@@ -45,9 +45,9 @@ usersRouter.delete('/:id', routeAuth, async (request, response) => {
   // console.log('User controller delete ID: ', request.params.id)
   const user = await User.findById(request.params.id)
 
-  const removed = await user.remove()
+  await user.remove()
 
-  console.log('User controller removed: ', removed)
+  // console.log('User controller removed: ', removed)
   response.status(204).end()
 })
 

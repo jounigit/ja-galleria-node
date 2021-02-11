@@ -35,7 +35,7 @@ albumsRouter.get('/:id', async (request, response) => {
 albumsRouter.post('/', routeAuth, async (request, response) => {
   const { title, content, category } = request.body
   const userID = request.user.id
-  console.log('Album create requests: ', request,' : ', title,' ', content)
+  // console.log('Album create requests: ', request,' : ', title,' ', content)
   const user = await User.findById(userID)
   // console.log('Album user: ', user)
 
@@ -47,13 +47,12 @@ albumsRouter.post('/', routeAuth, async (request, response) => {
   })
 
   const savedAlbum = await album.save()
-  console.log('Album saved: ', savedAlbum)
+  // console.log('Album saved: ', savedAlbum)
   user.albums = user.albums.concat(savedAlbum._id)
   await user.save()
 
   // update category document
   if( category || !category==='') {
-    console.log('cat if: ', category)
     const categoryToUpdate = await Category.findById(category)
     categoryToUpdate.albums = categoryToUpdate.albums.concat(savedAlbum._id)
     await categoryToUpdate.save()
@@ -134,7 +133,7 @@ albumsRouter.put('/:id/:picture', routeAuth, async (request, response) => {
 
   await Album.findByIdAndUpdate(albumID, albumToUpdate)
   const updatedAlbum = await Album.findById(albumID)
-  console.log('Update album: ', updatedAlbum.toJSON())
+  // console.log('Update album: ', updatedAlbum.toJSON())
   return response.json(updatedAlbum.toJSON())
 
 })
@@ -144,7 +143,7 @@ albumsRouter.delete('/:id/:picture', routeAuth, async (request, response) => {
   const albumID = request.params.id
   const pictureID = request.params.picture
 
-  console.log('FRONTTI huuttaa: ', albumID, ' -- ', pictureID)
+  // console.log('FRONTTI huuttaa: ', albumID, ' -- ', pictureID)
   const album = await Album.findById(albumID)
 
   const pictureToUpdate = {
@@ -153,7 +152,7 @@ albumsRouter.delete('/:id/:picture', routeAuth, async (request, response) => {
 
   await Album.findByIdAndUpdate(albumID, pictureToUpdate)
   const res = await Album.findById(albumID)
-  console.log('BACK delete albumPic: ', res)
+  // console.log('BACK delete albumPic: ', res)
   return response.json(res.toJSON())
 
 })
@@ -161,7 +160,7 @@ albumsRouter.delete('/:id/:picture', routeAuth, async (request, response) => {
 //******************* Delete one ***********************************/
 albumsRouter.delete('/:id', routeAuth, async (request, response) => {
   const album = await Album.findById(request.params.id)
-  console.log('Album Deteting!!!')
+  // console.log('Album Deteting!!!')
   await album.remove()
   response.status(204).end()
 })

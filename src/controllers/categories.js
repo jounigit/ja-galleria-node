@@ -30,7 +30,7 @@ categoriesRouter.post('/', routeAuth, async (request, response) => {
   })
 
   const savedCategory = await category.save()
-  console.log('Category saved: ', savedCategory)
+  // console.log('Category saved: ', savedCategory)
   user.categories = user.categories.concat(savedCategory._id)
   await user.save()
 

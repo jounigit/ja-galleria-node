@@ -58,7 +58,6 @@ pictureSchema.pre('remove', function (next) {
 })
 
 pictureSchema.pre('remove', function (next) {
-  console.log('Picture Schema middleware')
   this.model('Album').updateMany(
     { pictures: this._id },
     { $pull: { pictures: this._id } },

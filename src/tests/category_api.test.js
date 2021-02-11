@@ -19,8 +19,7 @@ describe('with initial categories', () => {
 
   // get all
   test('succeeds return categories as json', async () => {
-    const categories = await helper.allInCollection(Category)
-    console.log('CAT 1: ', categories)
+    await helper.allInCollection(Category)
 
     await api
       .get('/api/categories')
@@ -29,12 +28,10 @@ describe('with initial categories', () => {
   })
 
   test('all categories are returned', async () => {
-    const categories = await helper.allInCollection(Category)
-    console.log('CAT 2: ', categories)
+    await helper.allInCollection(Category)
+    // console.log('CAT 2: ', categories)
 
     const response = await api.get('/api/categories')
-
-    console.log(response.body)
 
     expect(response.body.length).toBe(helper.initialCategories.length)
   })

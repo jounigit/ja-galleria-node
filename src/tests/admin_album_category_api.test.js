@@ -69,19 +69,19 @@ describe('update relation', () => {
 
   test('should have album with new category', async () => {
     const album1Now = await updateAlbum(category2.id, initAlbums[0])
-    const atEnd = await Category.findById(category.id)
-    console.log('Category 1: ',  atEnd)
-    const atEnd2 = await Category.findById(category2.id)
-    console.log('Category 2: ',  atEnd2)
+    await Category.findById(category.id)
+    // console.log('Category 1: ',  atEnd)
+    await Category.findById(category2.id)
+    // console.log('Category 2: ',  atEnd2)
     expect(category.id).not.toEqual(album1Now.category)
     expect(category2.id).toEqual(album1Now.category)
   })
 
   test('should not have relation with old category', async () => {
-    const album1Now = await updateAlbum(category2.id, initAlbums[0])
-    console.log('Album 1: ',  album1Now)
+    await updateAlbum(category2.id, initAlbums[0])
+    // console.log('Album 1: ',  album1Now)
     const categoryAtEnd = await Category.findById(category.id)
-    console.log('Category 1: ',  categoryAtEnd)
+    // console.log('Category 1: ',  categoryAtEnd)
     expect(categoryAtEnd.albums.length).toBe(0)
   })
 
@@ -96,7 +96,7 @@ describe('update duplicate relation', () => {
   test('should have no duplicates', async () => {
     await updateAlbum(category.id, initAlbums[0])
     const categoryAtEnd = await Category.findById(category.id)
-    console.log('Category 1: ',  categoryAtEnd)
+    // console.log('Category 1: ',  categoryAtEnd)
     expect(categoryAtEnd.albums.length).toBe(1)
   })
 
@@ -107,7 +107,7 @@ describe('delete relation after deleting album or category', () => {
 
   test('should not have album with category', async () => {
     const album1Start = await updateAlbum(category.id, initAlbums[0])
-    console.log('album 1 start: ',  album1Start)
+    // console.log('album 1 start: ',  album1Start)
 
     await api
       .delete(`/api/categories/${category.id}`)
@@ -117,14 +117,14 @@ describe('delete relation after deleting album or category', () => {
     console.log('CAT 1: ', await Category.findById(category.id))
 
     const album1End = await Album.findById(initAlbums[0].id)
-    console.log('album 1 end: ',  album1End)
+    // console.log('album 1 end: ',  album1End)
 
     expect(album1End.category).not.toEqual(album1Start.category)
   })
 
   test('should not have category with album', async () => {
-    const album1Start = await updateAlbum(category.id, initAlbums[0])
-    console.log('album 1 start: ',  album1Start)
+    await updateAlbum(category.id, initAlbums[0])
+    // console.log('album 1 start: ',  album1Start)
 
     await api
       .delete(`/api/albums/${initAlbums[0].id}`)
@@ -132,10 +132,10 @@ describe('delete relation after deleting album or category', () => {
       .expect(204)
 
     const categoryNow = await Category.findById(category.id)
-    console.log('categoryNow: ', categoryNow)
+    // console.log('categoryNow: ', categoryNow)
 
-    const album1End = await Album.findById(initAlbums[0].id)
-    console.log('album 1 end: ',  album1End)
+    await Album.findById(initAlbums[0].id)
+    // console.log('album 1 end: ',  album1End)
 
     expect(categoryNow.albums.length).toBe(0)
   })

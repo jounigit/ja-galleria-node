@@ -32,7 +32,7 @@ describe('Tests with valid email and password', () => {
       })
       .expect(200)
 
-    console.log('Lgged in: ', response.body)
+    // console.log('Lgged in: ', response.body)
     expect(response.body.user).toBe(username)
   })
 
@@ -46,13 +46,13 @@ describe('Tests with valid email and password', () => {
       })
       .expect(200)
 
-    console.log('Lgged in: ', response.body)
+    // console.log('Lgged in: ', response.body)
     expect(response.body.username).toBe(newUser)
   })
 
   test('should resign/delete user', async () => {
     token = await helper.getToken()
-    console.log('Test user: ', testUser)
+    // console.log('Test user: ', testUser)
     const userId = testUser._id
 
     await api

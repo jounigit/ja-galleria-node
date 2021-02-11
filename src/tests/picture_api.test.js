@@ -29,12 +29,11 @@ describe('with initial pictures', () => {
   })
 
   test('all pictures are returned', async () => {
-    const pictures = await helper.allInCollection(Picture)
-    console.log('PICS 2: ', pictures)
+    await helper.allInCollection(Picture)
 
     const response = await api.get('/api/pictures')
 
-    console.log(response.body)
+    // console.log(response.body)
 
     expect(response.body.length).toBe(helper.initialPictures.length)
   })
