@@ -2,6 +2,7 @@ const loggedinRouter = require('express').Router()
 const User = require('../models/user')
 const jwtAuth = require('express-jwt')
 
+// eslint-disable-next-line no-undef
 const routeAuth = jwtAuth({ secret: process.env.SECRET })
 
 //******************* Get loggedin user ******************************/
