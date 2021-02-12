@@ -27,4 +27,4 @@ jobs:
         SECRET: ${{ secrets.AUTH_SECRET }}
         MONGODB_URI: ${{ secrets.MONGODB_URI }}
         TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
-        TEST_DB: ${{ TEST_DB }}
+        TEST_DB: ${{ secrets.TEST_DB }}
