@@ -23,9 +23,9 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: npm run lint
-    - run: npm test
-      env:
-        SECRET: ${{ secrets.AUTH_SECRET }}
-        MONGODB_URI: ${{ secrets.MONGODB_URI }}
-        TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
-        TEST_DB: ${{ secrets.TEST_DB }}
+    # - run: npm test
+    #   env:
+    #     SECRET: ${{ secrets.AUTH_SECRET }}
+    #     MONGODB_URI: ${{ secrets.MONGODB_URI }}
+    #     TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
+    #     TEST_DB: ${{ secrets.TEST_DB }}
