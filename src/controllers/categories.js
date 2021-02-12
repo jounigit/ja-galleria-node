@@ -2,7 +2,7 @@ const categoriesRouter = require('express').Router()
 const User = require('../models/user')
 const Category = require('../models/category')
 const jwtAuth = require('express-jwt')
-const config = require('./utils/config')
+const config = require('../utils/config')
 
 // eslint-disable-next-line no-undef
 const routeAuth = jwtAuth({ secret: config.AUTH_SECRET })
