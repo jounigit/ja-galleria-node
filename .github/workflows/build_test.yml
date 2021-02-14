@@ -30,7 +30,7 @@ jobs:
         TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
         TEST_DB: ${{ secrets.TEST_DB }}
   deploy:
-    needs: build_tests
+    - uses: actions/checkout@v2
     - uses: akhileshns/heroku-deploy@v3.11.10 # This is the action
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
