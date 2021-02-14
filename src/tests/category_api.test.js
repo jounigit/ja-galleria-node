@@ -19,9 +19,6 @@ describe('with initial categories', () => {
 
   // get all
   test('succeeds return categories as json', async () => {
-    console.log('########## Yo LOG!')
-    console.debug('########## Yo DEBUG!\n\n')
-    console.info('########## Yo INFO!')
     await helper.allInCollection(Category)
 
     await api
@@ -106,6 +103,7 @@ describe('unauthorized fails with status 401 at protected routes', () => {
   test('fails delete with valid id',  async  () => {
     const categoriesAtStart = await helper.allInCollection(Category)
     const category = categoriesAtStart[0]
+    console.log('CATEGORY ID: ', category.id)
 
     await api
       .delete(`/api/categories/${category.id}`)
