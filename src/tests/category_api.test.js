@@ -29,7 +29,7 @@ describe('with initial categories', () => {
 
   test('all categories are returned', async () => {
     await helper.allInCollection(Category)
-    // console.log('CAT 2: ', categories)
+    console.log('CAT 2: ', categories)
 
     const response = await api.get('/api/categories')
 
