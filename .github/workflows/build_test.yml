@@ -29,7 +29,8 @@ jobs:
         MONGODB_URI: ${{ secrets.MONGODB_URI }}
         TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
         TEST_DB: ${{ secrets.TEST_DB }}
-    - uses: akhileshns/heroku-deploy@v3.11.10 # This is the action
+    - name: Deploy to heroku
+      uses: akhileshns/heroku-deploy@v3.11.10 # This is the action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "ja-galleria-backend" #Must be unique in Heroku
