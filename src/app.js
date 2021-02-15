@@ -41,7 +41,7 @@ app.get('/health', (req, res) => {
   res.send('ok')
 })
 app.get('/version', (req, res) => {
-  res.send('1')
+  res.send('2')
 })
 app.use('/api/loggedin', loggedinRouter)
 app.use('/api/users', usersRouter)
