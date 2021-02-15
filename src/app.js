@@ -37,6 +37,9 @@ app.use(cors())
 app.use(express.json())
 app.use(middleware.requestLogger)
 
+app.get('/health', (req, res) => {
+  res.send('ok')
+})
 app.use('/api/loggedin', loggedinRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/login', loginRouter)
