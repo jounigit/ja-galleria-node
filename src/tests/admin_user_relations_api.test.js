@@ -73,10 +73,10 @@ describe('user deleting', () => {
   })
 
   test('should delete albums with relation', async () => {
-    const current = nonExistingDoc('albums', album1.body.id)
-    const current2 = nonExistingDoc('albums', album2.body.id)
-    console.log('Current: ', current.error)
-    console.log('Current: ', current2.error)
+    nonExistingDoc('albums', album1.body.id)
+    nonExistingDoc('albums', album2.body.id)
+    // console.log('Current: ', current.error)
+    // console.log('Current: ', current2.error)
   })
 
   test('should delete album with relation', async () => {
