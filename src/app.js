@@ -40,6 +40,9 @@ app.use(middleware.requestLogger)
 app.get('/health', (req, res) => {
   res.send('ok')
 })
+app.get('/version', (req, res) => {
+  res.send('1')
+})
 app.use('/api/loggedin', loggedinRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/login', loginRouter)

@@ -40,4 +40,6 @@ jobs:
         heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
         heroku_app_name: "ja-galleria-backend"
         heroku_email: "airaksinen.jouni@gmail.com"
+        healthcheck: "https://ja-galleria-backend.herokuapp.com/health"
+        checkstring: "ok"
     
