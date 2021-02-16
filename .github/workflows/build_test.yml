@@ -30,4 +30,15 @@ jobs:
         MONGODB_URI: ${{ secrets.MONGODB_URI }}
         TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
         TEST_DB: ${{ secrets.TEST_DB }}
-    
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build_test
+    steps:
+    - uses: actions/checkout@v2
+    - uses: akhileshns/heroku-deploy@v3.11.10
+      with:
+        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+        heroku_app_name: "sleepy-mesa-77635"
+        heroku_email: "airaksinen.jouni@gmail.com"
+        healthcheck: "https://sleepy-mesa-77635.herokuapp.com/health"
+        checkstring: "ok"
