@@ -9,7 +9,8 @@
     "dev": "cross-env NODE_ENV=development nodemon src/index.js",
     "lint": "eslint .",
     "test": "cross-env NODE_ENV=test jest --verbose --runInBand",
-    "start:test": "cross-env NODE_ENV=test node src/index.js"
+    "start:test": "cross-env NODE_ENV=test node src/index.js",
+    "push:gh": "git add . && git commit -m deploymaster && git push"
   },
   "author": "jouni airaksinen",
   "license": "MIT",
