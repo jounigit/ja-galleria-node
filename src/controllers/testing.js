@@ -9,7 +9,8 @@ router.post('/reset', async (request, response) => {
   await Album.deleteMany({})
   await Category.deleteMany({})
   await Picture.deleteMany({})
-  response.status(204).end()
+  console.log('Reset test DB!!')
+  response.send( 'Test db docs deleted!' )
 })
 
 module.exports = router
