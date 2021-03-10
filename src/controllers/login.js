@@ -31,7 +31,8 @@ loginRouter.post('/', async (request, response) => {
 
   const userForToken = {
     username: user.username,
-    id: user._id,
+    role: user.role,
+    id: user._id
   }
 
   // eslint-disable-next-line no-undef
@@ -39,7 +40,7 @@ loginRouter.post('/', async (request, response) => {
 
   response
     .status(200)
-    .send({ token, user: user.username, email: user.email, id: user._id })
+    .send({ token, user: user.username, email: user.email, id: user._id, role: user.role })
 })
 
 module.exports = loginRouter

@@ -54,6 +54,8 @@ categoriesRouter.get('/:id', async (request, response) => {
 
 //******************* Update one ***********************************/
 categoriesRouter.put('/:id', routeAuth, async (request, response) => {
+  console.log('Req user: ', request.user)
+  console.log('Req user role: ', request.user.role)
   const { title, content } = request.body
 
   const category = {

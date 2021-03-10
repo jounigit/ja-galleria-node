@@ -12,6 +12,11 @@ const userSchema = mongoose.Schema({
     unique: true
   },
   passwordHash: String,
+  role: {
+    type: String,
+    enum : ['guest', 'user','admin'],
+    default: 'guest'
+  },
   categories: [
     {
       type: mongoose.Schema.Types.ObjectId,
