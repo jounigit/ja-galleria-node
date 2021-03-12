@@ -58,7 +58,6 @@ describe('user relations', () => {
   })
 })
 
-
 //***************** user delete relation ******************************/
 
 describe('user deleting', () => {

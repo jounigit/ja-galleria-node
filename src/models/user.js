@@ -14,8 +14,8 @@ const userSchema = mongoose.Schema({
   passwordHash: String,
   role: {
     type: String,
-    enum : ['guest', 'user','admin'],
-    default: 'guest'
+    enum : ['editor', 'admin'],
+    default: 'editor'
   },
   categories: [
     {

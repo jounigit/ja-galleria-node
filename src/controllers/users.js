@@ -7,49 +7,49 @@ const jwtAuth = require('express-jwt')
 const routeAuth = jwtAuth({ secret: process.env.SECRET })
 
 //******************* Get all ***********************************/
-usersRouter.get('/', async (request, response) => {
+usersRouter.get('/', async (req, res) => {
   const users = await User.find({})
-  response.json(users.map(u => u.toJSON()))
+  res.json(users.map(u => u.toJSON()))
 })
 
 //******************* Get one ***********************************/
-usersRouter.get('/:id', async (request, response) => {
-  const user = await User.findById(request.params.id)
+usersRouter.get('/:id', async (req, res) => {
+  const user = await User.findById(req.params.id)
   if (user) {
-    response.json(user.toJSON())
+    res.json(user.toJSON())
   } else {
-    response.status(404).end()
+    res.status(404).end()
   }
 })
 
 //******************* Create new ***********************************/
-usersRouter.post('/', async (request, response) => {
-  const body = request.body
+usersRouter.post('/', async (req, res) => {
+  const { username, email, password, role } = req.body
 
   const saltRounds = 10
-  const passwordHash = await bcrypt.hash(body.password, saltRounds)
+  const passwordHash = await bcrypt.hash(password, saltRounds)
 
   const user = new User({
-    username: body.username,
-    email: body.email,
+    username,
+    email,
     passwordHash,
-    role: body.role
+    role: role || 'editor'
   })
 
   const savedUser = await user.save()
 
-  response.json(savedUser)
+  res.json(savedUser)
 })
 
 //******************* Delete user ***********************************/
-usersRouter.delete('/:id', routeAuth, async (request, response) => {
-  // console.log('User controller delete ID: ', request.params.id)
-  const user = await User.findById(request.params.id)
+usersRouter.delete('/:id', routeAuth, async (req, res) => {
+  // console.log('User controller delete ID: ', req.params.id)
+  const user = await User.findById(req.params.id)
 
   await user.remove()
 
   // console.log('User controller removed: ', removed)
-  response.status(204).end()
+  res.status(204).end()
 })
 
 module.exports = usersRouter

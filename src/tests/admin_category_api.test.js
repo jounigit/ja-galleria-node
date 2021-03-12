@@ -7,47 +7,42 @@ const { setupDB } = require('./test-setup')
 
 setupDB()
 
-const Category = require('../models/category')
-
 let token
 
-//***************** admin succeeds ******************************/
+beforeEach( async () => {
+  await helper.addTestUser()
+  token = await helper.getToken()
+})
 
-describe('authorized with a valid token', () => {
-  beforeAll( async () => {
-    await helper.addTestUser()
-    token = await helper.getToken()
-  })
-
-  beforeEach( async () => {
-    await Category.insertMany(helper.initialCategories)
-    // console.log('Albums init:', atStart)
-  })
-
+//***************** succeeds ******************************/
+describe('authorized with a valid token adding new category', () => {
   // create
-  test('succeeds adding new category', async () => {
-
+  test('succeeds', async () => {
     await api
       .post('/api/categories')
-      .send({
-        title: 'Category added'
-      })
+      .send({ title: 'Category added' })
       .set('Authorization', `Bearer ${token}`)
       .expect(200)
   })
+})
+
+describe('authorized with a valid token and permission', () => {
+  beforeEach( async () => {
+    await api
+      .post('/api/categories')
+      .send({ title: 'Category to update' })
+      .set('Authorization', `Bearer ${token}`)
+  })
 
   // update
-  test('succeeds update with valid id',  async  () => {
-    const categoriesAtStart = await helper.allInCollection(Category)
-    const category = categoriesAtStart[0]
-
+  test('succeeds update with valid id and permission',  async  () => {
     const title = 'Updated'
-    const newCategory = {
-      title
-    }
+    const newCategory = { title }
+
+    const categories = await api.get('/api/categories')
 
     const response = await api
-      .put(`/api/categories/${category.id}`)
+      .put(`/api/categories/${categories.body[0].id}`)
       .send(newCategory)
       .set('Authorization', `Bearer ${token}`)
       .expect(200)
@@ -57,20 +52,62 @@ describe('authorized with a valid token', () => {
     expect(title).toContain(responseTitle)
   })
 
-  // delete
+  delete
   test('succeeds delete with valid id', async () => {
-    const categoriesAtStart = await helper.allInCollection(Category)
-    const categoryToDelete = categoriesAtStart[0]
-    // console.log('ALUKSI::', categoriesAtStart)
+    const categories = await api.get('/api/categories')
+    const categoryToDelete = categories.body[0]
     await api
       .delete(`/api/categories/${categoryToDelete.id}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(204)
 
-    const categoriesAtEnd = await helper.allInCollection(Category)
+    categoriesAtEnd = await api.get('/api/categories')
 
     // console.log('LOPUKSI::', categoriesAtEnd)
-    expect(categoriesAtEnd.length).toBe(categoriesAtStart.length-1)
+    expect(categoriesAtEnd.body.length).toBe(categories.body.length-1)
+  })
+})
+
+
+//***************** fails ******************************/
+describe('authorized with a valid token with no permission', () => {
+  let wrongToken
+  beforeEach( async () => {
+    await api
+      .post('/api/categories')
+      .send({ title: 'Category to update' })
+      .set('Authorization', `Bearer ${token}`)
+
+    await helper.addTestUser('eilupaa', 'e@mail.com', 'vikapassi', 'editor')
+    wrongToken = await helper.getToken('eilupaa', 'vikapassi')
   })
 
+  test('fails update',  async  () => {
+    const categories = await api.get('/api/categories')
+    const category = categories.body[0]
+
+    const response = await api
+      .put(`/api/categories/${category.id}`)
+      .send({ title: 'Updated' })
+      .set('Authorization', `Bearer ${wrongToken}`)
+      .expect(403)
+      .expect('Content-Type', /application\/json/)
+
+    const { error } = response.body
+    expect(error).toContain('You don\'t have enough permission')
+  })
+
+  delete
+  test('fails delete ', async () => {
+    const categories = await api.get('/api/categories')
+    const categoryToDelete = categories.body[0]
+    const response = await api
+      .delete(`/api/categories/${categoryToDelete.id}`)
+      .set('Authorization', `Bearer ${wrongToken}`)
+      .expect(403)
+
+    const { error } = response.body
+    expect(error).toContain('You don\'t have enough permission')
+  })
 })
+

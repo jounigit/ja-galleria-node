@@ -4,6 +4,7 @@ const Category = require('../models/category')
 const Album = require('../models/album')
 const jwtAuth = require('express-jwt')
 const _ = require('underscore-node')
+const { grantAccess } = require('../utils/accessControl')
 
 // eslint-disable-next-line no-undef
 const routeAuth = jwtAuth({ secret: process.env.SECRET })
@@ -67,10 +68,14 @@ albumsRouter.post('/', routeAuth, async (request, response) => {
 })
 
 //******************* Update one ***********************************/
-albumsRouter.put('/:id', routeAuth, async (request, response) => {
-  const { category } = request.body
-  const albumID = request.params.id
+albumsRouter.put('/:id', routeAuth, async (req, res) => {
+  const { category } = req.body
+  const albumID = req.params.id
   const album = await Album.findById(albumID)
+
+  const access = grantAccess(req.user, album.user, 'deleteOwn', 'deleteAny', 'album')
+  console.log('Access: ', access)
+  if (!access) { return res.status(403).json({ error: 'You don\'t have enough permission' }) }
 
   if( category && album.category && category !== album.category) {
     const oldCategory = await Category.findById(album.category)
@@ -85,12 +90,12 @@ albumsRouter.put('/:id', routeAuth, async (request, response) => {
     await categoryToUpdate.save()
   }
 
-  await album.updateOne(request.body)
+  await album.updateOne(req.body)
 
   const updatedAlbum = await Album.findById(albumID)
     .populate('user', { username: 1, email: 1 })
 
-  return response.json(updatedAlbum.toJSON())
+  return res.json(updatedAlbum.toJSON())
 })
 
 //******************* Update one ***********************************/
@@ -158,11 +163,14 @@ albumsRouter.delete('/:id/:picture', routeAuth, async (request, response) => {
 })
 
 //******************* Delete one ***********************************/
-albumsRouter.delete('/:id', routeAuth, async (request, response) => {
-  const album = await Album.findById(request.params.id)
-  // console.log('Album Deteting!!!')
+albumsRouter.delete('/:id', routeAuth, async (req, res) => {
+  const album = await Album.findById(req.params.id)
+
+  const access = grantAccess(req.user, album.user, 'deleteOwn', 'deleteAny', 'album')
+  if (!access) { return res.status(403).json({ error: 'You don\'t have enough permission' }) }
+
   await album.remove()
-  response.status(204).end()
+  res.status(204).end()
 })
 
 module.exports = albumsRouter

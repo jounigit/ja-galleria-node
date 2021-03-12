@@ -2,22 +2,23 @@ const categoriesRouter = require('express').Router()
 const User = require('../models/user')
 const Category = require('../models/category')
 const jwtAuth = require('express-jwt')
+const { grantAccess } = require('../utils/accessControl')
 
 // eslint-disable-next-line no-undef
 const routeAuth = jwtAuth({ secret: process.env.SECRET })
 
 //******************* Get all ***********************************/
-categoriesRouter.get('/', async (request, response) => {
+categoriesRouter.get('/', async (req, res) => {
   const categories = await Category.find({})
     // .populate( { path: 'albums', model: 'Album' } )
     .populate( 'user', { username: 1 } )
-  response.json(categories.map(category => category.toJSON()))
+  res.json(categories.map(category => category.toJSON()))
 })
 
 //******************* Create new ***********************************/
-categoriesRouter.post('/', routeAuth, async (request, response) => {
-  const { title, content } = request.body
-  const userID = request.user.id
+categoriesRouter.post('/', routeAuth, async (req, res) => {
+  const { title, content } = req.body
+  const userID = req.user.id
 
   const user = await User
     .findById(userID)
@@ -38,44 +39,60 @@ categoriesRouter.post('/', routeAuth, async (request, response) => {
     .findById(savedCategory._id)
     .populate('user', { username: 1, email: 1 })
 
-  return response.json(newSavedCategory.toJSON())
+  return res.json(newSavedCategory.toJSON())
 
 })
 
 //******************* Get one ***********************************/
-categoriesRouter.get('/:id', async (request, response) => {
-  const category = await Category.findById(request.params.id)
+categoriesRouter.get('/:id', async (req, res) => {
+  const category = await Category.findById(req.params.id)
   if (category) {
-    response.json(category.toJSON())
+    res.json(category.toJSON())
   } else {
-    response.status(404).end()
+    res.status(404).end()
   }
 })
 
+// const updatePermission = (user, documentUser, resource) => {
+//   return (user.id === documentUser) ? ac.can(user.role).updateOwn(resource) : ac.can(user.role).updateAny(resource)
+// }
+
 //******************* Update one ***********************************/
-categoriesRouter.put('/:id', routeAuth, async (request, response) => {
-  console.log('Req user: ', request.user)
-  console.log('Req user role: ', request.user.role)
-  const { title, content } = request.body
+categoriesRouter.put('/:id', routeAuth, async (req, res) => {
+  console.log('Req user: ', req.user)
 
-  const category = {
-    title,
-    content
-  }
+  const category = await Category.findById(req.params.id)
 
-  await Category.findByIdAndUpdate(request.params.id, category)
-  const updatedCategory = await Category.findById(request.params.id)
+  const access = grantAccess(req.user, category.user, 'updateOwn', 'updateAny', 'category')
+  if (!access) { return res.status(403).json({ error: 'You don\'t have enough permission' }) }
+
+  await category.updateOne(req.body)
+
+  const updatedCategory = await Category.findById(req.params.id)
     .populate('user', { username: 1, email: 1 })
-  return response.json(updatedCategory.toJSON())
+  return res.json(updatedCategory.toJSON())
 })
 
 //******************* Delete one ***********************************/
-categoriesRouter.delete('/:id', routeAuth, async (request, response) => {
+categoriesRouter.delete('/:id', routeAuth, async (req, res) => {
 
-  const category = await Category.findById(request.params.id)
+  const category = await Category.findById(req.params.id)
+
+  const access = grantAccess(req.user, category.user, 'deleteOwn', 'deleteAny', 'category')
+  if (!access) { return res.status(403).json({ error: 'You don\'t have enough permission' }) }
 
   await category.remove()
-  response.status(204).end()
+  res.status(204).end()
 })
 
 module.exports = categoriesRouter
+
+
+// const permission = (req.user.id === category.user) ? ac.can(req.user.role).updateOwn('category')
+//   : ac.can(req.user.role).updateAny('category')
+
+// updatePermission(req.user, category.user, category)
+
+// if (!permission.granted) {
+//   return res.status(403).json({ error: 'You don\'t have enough permission' })
+// }

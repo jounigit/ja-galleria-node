@@ -9,20 +9,22 @@ setupDB()
 
 let token
 let testUser
+const username = helper.username
+const password = helper.password
+const newUser = 'newuser'
+const newEmail = 'new@mail.com'
+const newPassword = 'newpass'
+
+beforeEach( async () => {
+  testUser = await helper.addTestUser()
+  token = await helper.getToken()
+  console.log('Before Test user: ', testUser)
+})
+
 
 //********************** succeeds ******************************/
 
 describe('Tests with valid email and password', () => {
-  const username = helper.username
-  const password = helper.password
-  const newUser = 'newuser'
-  const newEmail = 'new@mail.com'
-  const newPassword = 'newpass'
-
-  beforeEach( async () => {
-    testUser = await helper.addTestUser()
-  })
-
   test('should login', async () => {
     const response = await api
       .post('/api/login')
@@ -51,8 +53,7 @@ describe('Tests with valid email and password', () => {
   })
 
   test('should resign/delete user', async () => {
-    token = await helper.getToken()
-    // console.log('Test user: ', testUser)
+    console.log('Test user: ', testUser)
     const userId = testUser._id
 
     await api

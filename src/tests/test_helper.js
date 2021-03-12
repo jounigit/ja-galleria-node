@@ -91,18 +91,22 @@ const dropAllCollections = async () => {
 const username = 'test'
 const email = 'test@mail.com'
 const password = 'testpassi'
+const role = 'editor'
 
-const addTestUser = async (user=username, mail=email, pass=password) => {
+const addTestUser = async (user=username, mail=email, pass=password, r=role) => {
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(pass, saltRounds)
 
   const testUser = {
     username: user,
     email: mail,
-    passwordHash
+    passwordHash,
+    role: r
   }
 
-  return await User.create(testUser)
+  const newUser = await User.create(testUser)
+  console.log('Testhelper New user: ', newUser)
+  return newUser
 }
 
 const getToken = async (user=username, pass=password) => {
@@ -113,11 +117,19 @@ const getToken = async (user=username, pass=password) => {
       password:pass,
     })
 
-  // console.log('GET VALID TOKEN: ', response.body.token)
+  console.log('GET VALID TOKEN: ', response.body.token)
   return response.body.token
 }
 
 //********** common helpers *******************************/
+const createDoc = async(path, title, token) => {
+  return await api
+    .post(`/api/${path}`)
+    .send({ title })
+    .set('Authorization', `Bearer ${token}`)
+    .expect(200)
+}
+
 const allInCollection = async (collection) => {
   const documents = await collection.find({})
   return documents.map(document => document.toJSON())
@@ -138,6 +150,7 @@ module.exports = {
   initialCategories,
   initialAlbums,
   initialPictures,
+  createDoc,
   nonExistingId,
   addTestUser,
   getToken,

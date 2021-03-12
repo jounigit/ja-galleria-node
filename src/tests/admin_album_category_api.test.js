@@ -9,9 +9,6 @@ const Category = require('../models/category')
 
 setupDB()
 
-let initAlbums
-let initCategories
-let category
 let token
 
 const updateAlbum = async (categoryID, album) => {
@@ -20,43 +17,44 @@ const updateAlbum = async (categoryID, album) => {
     .send({ category: categoryID })
     .set('Authorization', `Bearer ${token}`)
     .expect(200)
+  console.log('Updated: ', updated.body)
   return updated.body
 }
 
-beforeAll( async () => {
+beforeEach( async () => {
   await helper.addTestUser()
   token = await helper.getToken()
-})
-
-beforeEach( async () => {
-  await Album.insertMany(helper.initialAlbums)
-  await Category.insertMany(helper.initialCategories)
-  initAlbums = await helper.allInCollection(Album)
-  initCategories = await helper.allInCollection(Category)
-  category = initCategories[0]
-  category2 = initCategories[1]
+  const getA1 = await helper.createDoc('albums', 'album 1', token)
+  const getA2 = await helper.createDoc('albums', 'album 2', token)
+  const getCat1 = await helper.createDoc('categories', 'category 1', token)
+  const getCat2 = await helper.createDoc('categories', 'category 2', token)
+  album1 = getA1.body
+  album2 = getA2.body
+  category1 = getCat1.body
+  category2 = getCat2.body
 })
 
 //***************** admin succeeds ******************************/
 describe('make relation between album and category', () => {
 
   test('should have album with category', async () => {
-    const album1Now = await updateAlbum(category.id, initAlbums[0])
-    expect(category.id).toEqual(album1Now.category)
+    console.log('Cat 1: ', category1)
+    const album1Now = await updateAlbum(category1.id, album1)
+    expect(category1.id).toEqual(album1Now.category)
   })
 
   test('should have category with album', async () => {
-    const album1Now = await updateAlbum(category.id, initAlbums[0])
-    const categoryNow = await Category.findById(category.id)
+    const album1Now = await updateAlbum(category1.id, album1)
+    const categoryNow = await Category.findById(category1.id)
     expect(album1Now.id).toContain(categoryNow.albums)
   })
 
   test('should have category with 2 albums', async () => {
-    await updateAlbum(category.id, initAlbums[0]) // add album to category
-    await updateAlbum(category.id, initAlbums[1]) // add album to category
-    const atEnd = await Category.findById(category.id)
+    await updateAlbum(category1.id, album1) // add album to category
+    await updateAlbum(category1.id, album2) // add album to category
+    const atEnd = await Category.findById(category1.id)
     // console.log('End: ', atEnd.albums.length)
-    expect(atEnd.albums.length).toBe(category.albums.length+2)
+    expect(atEnd.albums.length).toBe(category1.albums.length+2)
   })
 })
 
@@ -64,23 +62,21 @@ describe('make relation between album and category', () => {
 describe('update relation', () => {
 
   beforeEach( async () => {
-    await updateAlbum(category.id, initAlbums[0]) // add album to category
+    await updateAlbum(category1.id, album1) // add album to category
   })
 
   test('should have album with new category', async () => {
-    const album1Now = await updateAlbum(category2.id, initAlbums[0])
-    await Category.findById(category.id)
-    // console.log('Category 1: ',  atEnd)
+    const album1Now = await updateAlbum(category2.id, album1)
+    await Category.findById(category1.id)
     await Category.findById(category2.id)
-    // console.log('Category 2: ',  atEnd2)
-    expect(category.id).not.toEqual(album1Now.category)
+    expect(category1.id).not.toEqual(album1Now.category)
     expect(category2.id).toEqual(album1Now.category)
   })
 
   test('should not have relation with old category', async () => {
-    await updateAlbum(category2.id, initAlbums[0])
+    await updateAlbum(category2.id, album1)
     // console.log('Album 1: ',  album1Now)
-    const categoryAtEnd = await Category.findById(category.id)
+    const categoryAtEnd = await Category.findById(category1.id)
     // console.log('Category 1: ',  categoryAtEnd)
     expect(categoryAtEnd.albums.length).toBe(0)
   })
@@ -90,12 +86,12 @@ describe('update relation', () => {
 describe('update duplicate relation', () => {
 
   beforeEach( async () => {
-    await updateAlbum(category.id, initAlbums[0]) // add album to category
+    await updateAlbum(category1.id, album1) // add album to category
   })
 
   test('should have no duplicates', async () => {
-    await updateAlbum(category.id, initAlbums[0])
-    const categoryAtEnd = await Category.findById(category.id)
+    await updateAlbum(category1.id, album1)
+    const categoryAtEnd = await Category.findById(category1.id)
     // console.log('Category 1: ',  categoryAtEnd)
     expect(categoryAtEnd.albums.length).toBe(1)
   })
@@ -106,35 +102,33 @@ describe('update duplicate relation', () => {
 describe('delete relation after deleting album or category', () => {
 
   test('should not have album with category', async () => {
-    const album1Start = await updateAlbum(category.id, initAlbums[0])
-    // console.log('album 1 start: ',  album1Start)
+    const album1Start = await updateAlbum(category1.id, album1)
 
     await api
-      .delete(`/api/categories/${category.id}`)
+      .delete(`/api/categories/${category1.id}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(204)
 
-    console.log('CAT 1: ', await Category.findById(category.id))
+    console.log('CAT 1: ', await Category.findById(category1.id))
 
-    const album1End = await Album.findById(initAlbums[0].id)
+    const album1End = await Album.findById(album1.id)
     // console.log('album 1 end: ',  album1End)
 
     expect(album1End.category).not.toEqual(album1Start.category)
   })
 
   test('should not have category with album', async () => {
-    await updateAlbum(category.id, initAlbums[0])
-    // console.log('album 1 start: ',  album1Start)
+    await await updateAlbum(category1.id, album1)
 
     await api
-      .delete(`/api/albums/${initAlbums[0].id}`)
+      .delete(`/api/albums/${album1.id}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(204)
 
-    const categoryNow = await Category.findById(category.id)
+    const categoryNow = await Category.findById(category1.id)
     // console.log('categoryNow: ', categoryNow)
 
-    await Album.findById(initAlbums[0].id)
+    // await Album.findById(album1.id)
     // console.log('album 1 end: ',  album1End)
 
     expect(categoryNow.albums.length).toBe(0)
