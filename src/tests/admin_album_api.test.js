@@ -7,7 +7,7 @@ const { setupDB } = require('./test-setup')
 
 setupDB()
 
-const Album = require('../models/album')
+// const Album = require('../models/album')
 
 let token
 
@@ -59,17 +59,17 @@ describe('authorized with a valid token and permission', () => {
 
   // delete
   test('succeeds delete with valid id', async () => {
-    const atStart = await helper.allInCollection(Album)
-    const album = atStart[0]
+    const albums = await api.get('/api/albums')
+    const albumToDelete = albums.body[0]
 
     await api
-      .delete(`/api/albums/${album.id}`)
+      .delete(`/api/albums/${albumToDelete.id}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(204)
 
-    const atEnd = await helper.allInCollection(Album)
+    const atEnd = await api.get('/api/albums')
 
-    expect(atEnd.length).toBe(atStart.length-1)
+    expect(atEnd.body.length).toBe(albums.body.length-1)
   })
 })
 
@@ -91,27 +91,23 @@ describe('authorized with a valid token with no permission', () => {
     const albums = await api.get('/api/albums')
     const album = albums.body[0]
 
-    const response = await api
+    await api
       .put(`/api/albums/${album.id}`)
       .send({ title: 'Updated' })
       .set('Authorization', `Bearer ${wrongToken}`)
       .expect(403)
       .expect('Content-Type', /application\/json/)
 
-    const { error } = response.body
-    expect(error).toContain('You don\'t have enough permission')
   })
 
   delete
   test('fails delete ', async () => {
     const albums = await api.get('/api/albums')
     const albumToDelete = albums.body[0]
-    const response = await api
+    await api
       .delete(`/api/albums/${albumToDelete.id}`)
       .set('Authorization', `Bearer ${wrongToken}`)
       .expect(403)
 
-    const { error } = response.body
-    expect(error).toContain('You don\'t have enough permission')
   })
 })
