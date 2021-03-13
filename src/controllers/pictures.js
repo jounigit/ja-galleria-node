@@ -47,6 +47,9 @@ const setOptions =  (width, height, orientation) => {
 
 //******************* Upload picture ***********************************/
 picturesRouter.post('/upload', routeAuth, async (request, response) => {
+  console.log('Upload req files: ', request.files)
+  console.log('Upload req files image: ', request.files.image)
+  console.log('Upload req temp: ', request.files.image.tempFilePath)
   const file = request.files.image
   console.log('Original: ', file)
   const userID = request.user.id
@@ -64,8 +67,8 @@ picturesRouter.post('/upload', routeAuth, async (request, response) => {
     if (error) response.send({ error: 'could not upload image' })
     return ({ result })
   })
-  // console.log('Uploaded: ', newPic)
-  // console.log('UPLOADED width: ', newPic.width)
+  console.log('Uploaded: ', newPic)
+  console.log('UPLOADED width: ', newPic.width)
 
   const ratio = 3/4
   const newPicWidth = newPic.width

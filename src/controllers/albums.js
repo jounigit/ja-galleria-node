@@ -75,7 +75,7 @@ albumsRouter.put('/:id', routeAuth, async (req, res) => {
 
   const access = grantAccess(req.user, album.user, 'deleteOwn', 'deleteAny', 'album')
   console.log('Access: ', access)
-  if (!access) { return res.status(403).json({ error: 'You don\'t have enough permission' }) }
+  if (!access) { return res.status(403).send({ message: 'You don\'t have enough permission' }) }
 
   if( category && album.category && category !== album.category) {
     const oldCategory = await Category.findById(album.category)
